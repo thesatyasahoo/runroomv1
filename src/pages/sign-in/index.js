@@ -19,7 +19,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import CircularProgress from '@mui/material/CircularProgress';
+import CircularProgress from "@mui/material/CircularProgress";
 
 const Page = () => {
   const [openDialog, setOpenDialog] = useState(false);
@@ -35,8 +35,8 @@ const Page = () => {
     mesage: "",
     color: "info",
   });
-  let url = process.env.NEXT_PUBLIC_BASE_URL + "login";
-  let urlMobile = process.env.NEXT_PUBLIC_BASE_URL + "forgotPassword/";
+  let url = "http://159.223.96.89:4000/admin/" + "login";
+  let urlMobile = "http://159.223.96.89:4000/admin/" + "forgotPassword/";
   const dispatch = useDispatch();
   const authContext = useAuthContext();
   const formik = useFormik({
@@ -222,23 +222,33 @@ const Page = () => {
                           }}
                           variant="outlined"
                         />
-                        <FormHelperText sx={{ mt: 1, fontSize: '0.8rem'}}>Enter a valid Email Address.</FormHelperText>
+                        <FormHelperText sx={{ mt: 1, fontSize: "0.8rem" }}>
+                          Enter a valid Email Address.
+                        </FormHelperText>
                         {mobileMsg.status ? (
                           mobileMsg.status === 400 ? (
                             <p style={{ color: "red", fontSize: "0.9rem" }}>{mobileMsg.message}</p>
                           ) : (
-                            <p style={{ color: "#5cb85c", fontSize: "0.9rem" }}>{mobileMsg.message}</p>
+                            <p style={{ color: "#5cb85c", fontSize: "0.9rem" }}>
+                              {mobileMsg.message}
+                            </p>
                           )
                         ) : null}
-                        {loder === false ? <Button
-                          fullWidth
-                          size="large"
-                          sx={{ mt: 3 }}
-                          onClick={() => handleForgotPassword()}
-                          variant="contained"
-                        >
-                          Submit
-                        </Button> :   <div style={{textAlign: "center", marginTop:"1rem"}}><CircularProgress /></div>}
+                        {loder === false ? (
+                          <Button
+                            fullWidth
+                            size="large"
+                            sx={{ mt: 3 }}
+                            onClick={() => handleForgotPassword()}
+                            variant="contained"
+                          >
+                            Submit
+                          </Button>
+                        ) : (
+                          <div style={{ textAlign: "center", marginTop: "1rem" }}>
+                            <CircularProgress />
+                          </div>
+                        )}
                       </div>
                     </DialogContent>
                     <DialogActions>
@@ -268,7 +278,7 @@ const Page = () => {
                       <Tab label="Email" value="email" />
                       <Tab label="Phone Number" value="phoneNumber" />
                     </Tabs> */}
-                  <div style={{marginTop: "1rem"}}>
+                  <div style={{ marginTop: "1rem" }}>
                     <TextField
                       style={{ marginBottom: "1rem" }}
                       error={Boolean(formik.touched.email && formik.errors.email)}
@@ -294,7 +304,7 @@ const Page = () => {
                       value={formik.values.password}
                       variant="outlined"
                     />
-                    <FormHelperText sx={{ mt: 1 }} >Enter a valid email & password.</FormHelperText>
+                    <FormHelperText sx={{ mt: 1 }}>Enter a valid email & password.</FormHelperText>
                     {formik.errors.submit && (
                       <Typography color="error" sx={{ mt: 2 }} variant="p">
                         {formik.errors.submit}

@@ -37,7 +37,7 @@ export const AccountProfileDetails = (props) => {
     status: 0,
     message: "",
   });
-  let urlMobile = process.env.NEXT_PUBLIC_BASE_URL + "resetPassword/";
+  let urlMobile = "http://159.223.96.89:4000/admin/" + "resetPassword/";
   let token = useSelector((state) => (state.Profile.itemList ? state.Profile.itemList : []));
   let account_holder = useSelector((state) => (state.Profile.item ? state.Profile.item : []));
   const [values, setValues] = useState({

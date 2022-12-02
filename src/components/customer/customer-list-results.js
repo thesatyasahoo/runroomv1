@@ -19,7 +19,7 @@ import {
 import { getInitials } from "../../utils/get-initials";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
-import { AdminActions  } from "../../store/adminSlice";
+import { AdminActions } from "../../store/adminSlice";
 
 export const CustomerListResults = ({ customers, ...rest }) => {
   const [selectedCustomerIds, setSelectedCustomerIds] = useState([]);
@@ -34,14 +34,14 @@ export const CustomerListResults = ({ customers, ...rest }) => {
   }, []);
   const getAdminApiCall = async (token) => {
     await axios
-      .get(process.env.NEXT_PUBLIC_BASE_URL + 'getProfile', {
+      .get("http://159.223.96.89:4000/admin/" + "getProfile", {
         headers: {
           authorization: token,
         },
       })
       .then((res) => {
-       setAdminArray(res.data.userList);
-       dispatch(AdminActions.addToAdmin(res.data.userList))
+        setAdminArray(res.data.userList);
+        dispatch(AdminActions.addToAdmin(res.data.userList));
       })
       .catch((err) => {
         console.log(err);
