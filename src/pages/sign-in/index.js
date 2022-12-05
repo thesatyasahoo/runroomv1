@@ -35,8 +35,8 @@ const Page = () => {
     mesage: "",
     color: "info",
   });
-  let url = "http://159.223.96.89:4000/admin/" + "login";
-  let urlMobile = "http://159.223.96.89:4000/admin/" + "forgotPassword/";
+  let url = NEXT_PUBLIC_BASE_URL + "login";
+  let urlMobile = NEXT_PUBLIC_BASE_URL + "forgotPassword/";
   const dispatch = useDispatch();
   const authContext = useAuthContext();
   const formik = useFormik({
