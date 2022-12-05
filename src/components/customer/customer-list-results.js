@@ -34,7 +34,7 @@ export const CustomerListResults = ({ customers, ...rest }) => {
   }, []);
   const getAdminApiCall = async (token) => {
     await axios
-      .get(NEXT_PUBLIC_BASE_URL + "getProfile", {
+      .get(process.env.NEXT_PUBLIC_BASE_URL + "getProfile", {
         headers: {
           authorization: token,
         },

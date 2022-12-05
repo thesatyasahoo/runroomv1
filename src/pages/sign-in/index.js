@@ -35,8 +35,8 @@ const Page = () => {
     mesage: "",
     color: "info",
   });
-  let url = NEXT_PUBLIC_BASE_URL + "login";
-  let urlMobile = NEXT_PUBLIC_BASE_URL + "forgotPassword/";
+  let url = process.env.NEXT_PUBLIC_BASE_URL + "login";
+  let urlMobile = process.env.NEXT_PUBLIC_BASE_URL + "forgotPassword/";
   const dispatch = useDispatch();
   const authContext = useAuthContext();
   const formik = useFormik({
