@@ -7,9 +7,11 @@ import { auth, ENABLE_AUTH } from "../lib/auth";
 import { useSelector, useDispatch } from "react-redux";
 import { AccountHolderActions } from "../store/accountHolderSlice";
 import axios from "axios";
+import { useCookies } from "react-cookie";
 
 export const AccountPopover = (props) => {
   const { anchorEl, onClose, open, ...other } = props;
+  const [cookies, setCookie, removeCookie] = useCookies(["admin"]);
   const authContext = useContext(AuthContext);
   const [userData, setUserData] = useState({});
   const dispatch = useDispatch();
@@ -36,6 +38,8 @@ export const AccountPopover = (props) => {
   const handleSignOut = async () => {
     onClose?.();
     authContext.signOut();
+    removeCookie("admin");
+    removeCookie("token");
     Router.push("/sign-in").catch(console.error);
     // Check if authentication with Zalter is enabled
     // If not enabled, then redirect is not required

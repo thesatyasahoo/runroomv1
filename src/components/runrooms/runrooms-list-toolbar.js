@@ -24,9 +24,9 @@ export const RunroomListToolbar = (props) => (
       }}
     >
       <Typography sx={{ m: 1 }} variant="h5">
-        List Of Admin Users
+        List Of RunRoom
       </Typography>
-      <Box sx={{ minWidth: 500 }}>
+      {/* <Box sx={{ minWidth: 500 }}>
         <TextField
           fullWidth
           InputProps={{
@@ -38,10 +38,10 @@ export const RunroomListToolbar = (props) => (
               </InputAdornment>
             ),
           }}
-          placeholder="Search admin"
+          placeholder="Search Runroom"
           variant="outlined"
         />
-      </Box>
+      </Box> */}
     </Box>
     {/* <Box sx={{ mt: 3 }}>
       <Card>

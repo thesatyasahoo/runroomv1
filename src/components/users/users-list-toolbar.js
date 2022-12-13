@@ -12,7 +12,7 @@ import { Search as SearchIcon } from "../../icons/search";
 // import { Upload as UploadIcon } from '../../icons/upload';
 // import { Download as DownloadIcon } from '../../icons/download';
 
-export const CustomerListToolbar = (props) => (
+export const UsersListToolbar = (props) => (
   <Box {...props}>
     <Box
       sx={{
@@ -24,7 +24,7 @@ export const CustomerListToolbar = (props) => (
       }}
     >
       <Typography sx={{ m: 1 }} variant="h5">
-        List Of Admin
+        List Of Users
       </Typography>
       {/* <Box sx={{ minWidth: 500 }}>
         <TextField
@@ -38,7 +38,7 @@ export const CustomerListToolbar = (props) => (
               </InputAdornment>
             ),
           }}
-          placeholder="Search admin"
+          placeholder="Search Runroom"
           variant="outlined"
         />
       </Box> */}

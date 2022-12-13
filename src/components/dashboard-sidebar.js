@@ -1,41 +1,56 @@
-import { useEffect } from 'react';
-import NextLink from 'next/link';
-import { useRouter } from 'next/router';
-import PropTypes from 'prop-types';
-import { Box, Button, Divider, Drawer, Typography, useMediaQuery } from '@mui/material';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import { ChartBar as ChartBarIcon } from '../icons/chart-bar';
-import { Cog as CogIcon } from '../icons/cog';
-import { Lock as LockIcon } from '../icons/lock';
-import { Selector as SelectorIcon } from '../icons/selector';
-import { ShoppingBag as ShoppingBagIcon } from '../icons/shopping-bag';
-import { User as UserIcon } from '../icons/user';
-import { UserAdd as UserAddIcon } from '../icons/user-add';
-import { Users as UsersIcon } from '../icons/users';
-import { XCircle as XCircleIcon } from '../icons/x-circle';
-import { Logo } from './logo';
-import { NavItem } from './nav-item';
+import { useEffect } from "react";
+import NextLink from "next/link";
+import { useRouter } from "next/router";
+import PropTypes from "prop-types";
+import { Box, Button, Divider, Drawer, Typography, useMediaQuery } from "@mui/material";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import { ChartBar as ChartBarIcon } from "../icons/chart-bar";
+import { Cog as CogIcon } from "../icons/cog";
+import { Lock as LockIcon } from "../icons/lock";
+import { Selector as SelectorIcon } from "../icons/selector";
+import { ShoppingBag as ShoppingBagIcon } from "../icons/shopping-bag";
+import { User as UserIcon } from "../icons/user";
+import { UserAdd as UserAddIcon } from "../icons/user-add";
+import { Users as UsersIcon } from "../icons/users";
+import { XCircle as XCircleIcon } from "../icons/x-circle";
+import { Logo } from "./logo";
+import { NavItem } from "./nav-item";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import Diversity3Icon from "@mui/icons-material/Diversity3";
+import LanIcon from "@mui/icons-material/Lan";
 
 const items = [
   {
-    href: '/',
-    icon: (<ChartBarIcon fontSize="small" />),
-    title: 'Dashboard'
+    href: "/",
+    icon: <ChartBarIcon fontSize="small" />,
+    title: "Dashboard",
+  },
+
+  // {
+  //   href: "/runroom",
+  //   icon: <UsersIcon fontSize="small" />,
+  //   title: "Create Runroom",
+  // },
+  {
+    href: "/runrooms",
+    icon: <LanIcon fontSize="small" />,
+    title: "Runroom List",
   },
   {
-    href: '/customers',
-    icon: (<UsersIcon fontSize="small" />),
-    title: 'Admin'
+    href: "/squad",
+    icon: <Diversity3Icon fontSize="small" />,
+    title: "Squad",
   },
   {
-    href: '/runroom',
-    icon: (<UsersIcon fontSize="small" />),
-    title: 'Create Runroom'
+    href: "/users",
+    icon: <UsersIcon fontSize="small" />,
+    title: "Users",
   },
   {
-    href: '/runrooms',
-    icon: (<UsersIcon fontSize="small" />),
-    title: 'Runroom List'
+    href: "/customers",
+    icon: <AdminPanelSettingsIcon fontSize="small" />,
+    title: "Admin",
   },
   // {
   //   href: '/products',
@@ -43,9 +58,9 @@ const items = [
   //   title: 'Products'
   // },
   {
-    href: '/account',
-    icon: (<UserIcon fontSize="small" />),
-    title: 'Account'
+    href: "/account",
+    icon: <AccountCircleIcon fontSize="small" />,
+    title: "Account",
   },
   // {
   //   href: '/settings',
@@ -62,19 +77,19 @@ const items = [
   //   icon: (<UserAddIcon fontSize="small" />),
   //   title: 'Register'
   // },
-  {
-    href: '/404',
-    icon: (<XCircleIcon fontSize="small" />),
-    title: 'Error'
-  }
+  // {
+  //   href: '/404',
+  //   icon: (<XCircleIcon fontSize="small" />),
+  //   title: 'Error'
+  // }
 ];
 
 export const DashboardSidebar = (props) => {
   const { open, onClose } = props;
   const router = useRouter();
-  const lgUp = useMediaQuery((theme) => theme.breakpoints.up('lg'), {
+  const lgUp = useMediaQuery((theme) => theme.breakpoints.up("lg"), {
     defaultMatches: true,
-    noSsr: false
+    noSsr: false,
   });
 
   useEffect(
@@ -95,18 +110,15 @@ export const DashboardSidebar = (props) => {
     <>
       <Box
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          height: '100%',
-          textAlign: "center"
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          textAlign: "center",
         }}
       >
         <div>
           <Box sx={{ p: 3 }}>
-            <NextLink
-              href="/"
-              passHref
-            >
+            <NextLink href="/" passHref>
               <a>
                 <h1>Admin</h1>
               </a>
@@ -115,18 +127,13 @@ export const DashboardSidebar = (props) => {
         </div>
         <Divider
           sx={{
-            borderColor: '#2D3748',
-            my: 3
+            borderColor: "#2D3748",
+            my: 3,
           }}
         />
         <Box sx={{ flexGrow: 1 }}>
           {items.map((item) => (
-            <NavItem
-              key={item.title}
-              icon={item.icon}
-              href={item.href}
-              title={item.title}
-            />
+            <NavItem key={item.title} icon={item.icon} href={item.href} title={item.title} />
           ))}
         </Box>
         {/* <Divider sx={{ borderColor: '#2D3748' }} /> */}
@@ -141,10 +148,10 @@ export const DashboardSidebar = (props) => {
         open
         PaperProps={{
           sx: {
-            backgroundColor: 'neutral.900',
-            color: '#FFFFFF',
-            width: 280
-          }
+            backgroundColor: "neutral.900",
+            color: "#FFFFFF",
+            width: 280,
+          },
         }}
         variant="permanent"
       >
@@ -160,10 +167,10 @@ export const DashboardSidebar = (props) => {
       open={open}
       PaperProps={{
         sx: {
-          backgroundColor: 'neutral.900',
-          color: '#FFFFFF',
-          width: 280
-        }
+          backgroundColor: "neutral.900",
+          color: "#FFFFFF",
+          width: 280,
+        },
       }}
       sx={{ zIndex: (theme) => theme.zIndex.appBar + 100 }}
       variant="temporary"
@@ -175,5 +182,5 @@ export const DashboardSidebar = (props) => {
 
 DashboardSidebar.propTypes = {
   onClose: PropTypes.func,
-  open: PropTypes.bool
+  open: PropTypes.bool,
 };

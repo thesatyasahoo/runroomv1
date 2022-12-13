@@ -35,7 +35,7 @@ export const RunroomCreate = () => {
     state: false,
     mesage: "",
   });
-  
+
   console.log(data);
   useEffect(() => {}, []);
   const formik = useFormik({
@@ -65,9 +65,9 @@ export const RunroomCreate = () => {
             handleClick("success");
             // handleClose()
             setTimeout(() => {
-              formik.setValues(formik.initialValues)
+              formik.setValues(formik.initialValues);
             }, 1000);
-            
+
             // helpers.setSubmitting(true);
             // dispatch(AccountHolderActions.addProfile(res.data));
           })
@@ -164,7 +164,7 @@ export const RunroomCreate = () => {
               onBlur={formik.handleBlur}
               onChange={formik.handleChange}
               name="duration"
-              type="number"
+              type="text"
               value={formik.values.duration}
             />
           </div>
