@@ -11,11 +11,10 @@ import { TrafficByDevice } from "../components/dashboard/traffic-by-device";
 import { DashboardLayout } from "../components/dashboard-layout";
 import { AuthGuard } from "../contexts/auth-guard";
 
-
 const Page = () => (
   <>
     <Head>
-      <title>Dashboard | RunRoom</title>
+      <title>Dashboard</title>
     </Head>
     <Box
       component="main"
@@ -57,7 +56,9 @@ const Page = () => (
 );
 
 Page.getLayout = (page) => (
-  <DashboardLayout><AuthGuard>{page}</AuthGuard></DashboardLayout>
+  <DashboardLayout>
+    <AuthGuard>{page}</AuthGuard>
+  </DashboardLayout>
 );
 
 export default Page;

@@ -9,7 +9,7 @@ import { Logo } from "../../components/logo";
 import { useAuthContext } from "../../contexts/auth-context";
 import Router from "next/router";
 import axios from "axios";
-import Stack from "@mui/material/Stack";
+import jwt_decode from "jwt-decode";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import Slide from "@mui/material/Slide";
@@ -20,11 +20,13 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import CircularProgress from "@mui/material/CircularProgress";
+import { useCookies } from "react-cookie";
 
 const Page = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [email, setEmail] = useState("");
   const [loder, setLoder] = useState(false);
+  const [cookies, setCookie] = useCookies(["admin"]);
   const [mobileMsg, setMobileMsg] = useState({
     status: 0,
     message: "",
@@ -62,9 +64,13 @@ const Page = () => {
           .then((res) => {
             console.log(res);
             if (res.data.status === "200") {
+              console.log(res.data.access_token);
+              let token = jwt_decode(res.data.access_token);
               handleClick(res.data.msg, "success");
-              helpers.setSubmitting(true);
+              // helpers.setSubmitting(true);
               authContext.signIn(res.data);
+              setCookie("token", res.data.access_token);
+              setCookie("admin", res.data);
               dispatch(AccountHolderActions.addProfile(res.data));
               Router.push("/").catch(console.error);
             } else {

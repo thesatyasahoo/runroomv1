@@ -20,31 +20,38 @@ import { getInitials } from "../../utils/get-initials";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { AdminActions } from "../../store/adminSlice";
-import { useCookies } from "react-cookie";
+import { RunroomActions } from "../../store/runRoom";
 
-export const CustomerListResults = ({ customers, ...rest }) => {
+export const SquadListResults = ({ ...rest }) => {
   const [selectedCustomerIds, setSelectedCustomerIds] = useState([]);
-  const [cookies, setCookie] = useCookies(["token"]);
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(0);
   const [adminArray, setAdminArray] = useState([]);
   const dispatch = useDispatch();
 
-  // const { user } = useAuthContext();
-
+  const { user } = useAuthContext();
   useEffect(() => {
-    getAdminApiCall(cookies.token.access_token);
+    getRunRoomCall(user.access_token);
   }, []);
-  const getAdminApiCall = async (token) => {
+  const getRunRoomCall = async (token) => {
     await axios
-      .get(process.env.NEXT_PUBLIC_BASE_URL + "getProfile", {
+      .get(process.env.NEXT_PUBLIC_RUNROOM_URL + "runRoomList", {
         headers: {
           authorization: token,
         },
       })
       .then((res) => {
-        setAdminArray(res.data.userList);
-        dispatch(AdminActions.addToAdmin(res.data.userList));
+        console.log(res);
+        // let adminArr = [];
+        // res.data.roomList.map((e) => {
+        //   adminArr.push({
+        //     ...e,
+        //     createdAt: new Date(e.createdAt),
+        //     duration: new Date(e.duration),
+        //   })
+        // })
+        setAdminArray(res.data.roomList);
+        dispatch(RunroomActions.addToAdmin(res.data.roomList));
       })
       .catch((err) => {
         console.log(err);
@@ -108,26 +115,29 @@ export const CustomerListResults = ({ customers, ...rest }) => {
                     onChange={handleSelectAll}
                   />
                 </TableCell>
-                <TableCell>Name</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>mobile</TableCell>
+                <TableCell>Created At</TableCell>
+                <TableCell>Distance</TableCell>
+                <TableCell>Duration</TableCell>
+                <TableCell>Run Status</TableCell>
+                <TableCell>Type</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {adminArray.slice(0, limit).map((adminArray) => (
-                <TableRow
-                  hover
-                  key={adminArray._id}
-                  selected={selectedCustomerIds.indexOf(adminArray._id) !== -1}
-                >
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      checked={selectedCustomerIds.indexOf(adminArray._id) !== -1}
-                      onChange={(event) => handleSelectOne(event, adminArray._id)}
-                      value="true"
-                    />
-                  </TableCell>
-                  <TableCell>
+              {adminArray.length > 0
+                ? adminArray.slice(0, limit).map((adminArray) => (
+                    <TableRow
+                      hover
+                      key={adminArray._id}
+                      selected={selectedCustomerIds.indexOf(adminArray._id) !== -1}
+                    >
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          checked={selectedCustomerIds.indexOf(adminArray._id) !== -1}
+                          onChange={(event) => handleSelectOne(event, adminArray._id)}
+                          value="true"
+                        />
+                      </TableCell>
+                      {/* <TableCell>
                     <Box
                       sx={{
                         alignItems: "center",
@@ -141,11 +151,23 @@ export const CustomerListResults = ({ customers, ...rest }) => {
                         {adminArray.name}
                       </Typography>
                     </Box>
-                  </TableCell>
-                  <TableCell>{adminArray.email}</TableCell>
-                  <TableCell>{adminArray.mobile}</TableCell>
-                </TableRow>
-              ))}
+                  </TableCell> */}
+                      <TableCell>
+                        {adminArray.createdAt
+                          ? new Date(adminArray.createdAt).toLocaleDateString()
+                          : null}
+                      </TableCell>
+                      <TableCell>{adminArray.distance ? adminArray.distance : null}</TableCell>
+                      <TableCell>
+                        {adminArray.duration
+                          ? new Date(adminArray.duration).toLocaleDateString()
+                          : null}
+                      </TableCell>
+                      <TableCell>{adminArray.run_status ? adminArray.distance : null}</TableCell>
+                      <TableCell>{adminArray.type ? adminArray.distance : null}</TableCell>
+                    </TableRow>
+                  ))
+                : null}
             </TableBody>
           </Table>
         </Box>
@@ -161,8 +183,4 @@ export const CustomerListResults = ({ customers, ...rest }) => {
       />
     </Card>
   );
-};
-
-CustomerListResults.propTypes = {
-  customers: PropTypes.array.isRequired,
 };

@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { Box, Container } from "@mui/material";
-import { CustomerListResults } from "../components/customer/customer-list-results";
-import { CustomerListToolbar } from "../components/customer/customer-list-toolbar";
+import { UsersListResults } from "../components/users/users-list-results";
+import { UsersListToolbar } from "../components/users/users-list-toolbar";
 import { DashboardLayout } from "../components/dashboard-layout";
 import { customers } from "../__mocks__/customers";
 import { AuthGuard } from "../contexts/auth-guard";
@@ -9,7 +9,7 @@ import { AuthGuard } from "../contexts/auth-guard";
 const Page = () => (
   <>
     <Head>
-      <title>Customers</title>
+      <title>Users</title>
     </Head>
     <Box
       component="main"
@@ -19,9 +19,9 @@ const Page = () => (
       }}
     >
       <Container maxWidth={false}>
-        <CustomerListToolbar />
+        <UsersListToolbar />
         <Box sx={{ mt: 3 }}>
-          <CustomerListResults customers={customers} />
+          <UsersListResults runrooms={customers} />
         </Box>
       </Container>
     </Box>
