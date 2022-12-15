@@ -25,6 +25,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useCookies } from "react-cookie";
+import CircularProgress from "@mui/material/CircularProgress";
 
 export const SquadListResults = ({ ...rest }) => {
   const [loading, setLoading] = useState(false);
