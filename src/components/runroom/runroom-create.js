@@ -20,7 +20,7 @@ import {
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { AdminActions } from "../../store/adminSlice";
-import Stack from "@mui/material/Stack";
+import { useCookies } from "react-cookie";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import Slide from "@mui/material/Slide";
@@ -28,7 +28,7 @@ import Slide from "@mui/material/Slide";
 export const RunroomCreate = () => {
   const dispatch = useDispatch();
   const [type, setType] = useState(0);
-
+  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
   let token = useSelector((state) => (state.Profile.itemList ? state.Profile.itemList : []));
   let data = useSelector((state) => (state.Profile.item ? state.Profile.item : []));
   const [open, setOpen] = useState({
@@ -57,7 +57,7 @@ export const RunroomCreate = () => {
         await axios
           .post(process.env.NEXT_PUBLIC_RUNROOM_URL + "createRunroom", values, {
             headers: {
-              authorization: token.access_token ? token.access_token : "",
+              authorization: cookies.token ? cookies.token : "",
             },
           })
           .then((res) => {

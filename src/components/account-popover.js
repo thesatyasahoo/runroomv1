@@ -11,18 +11,18 @@ import { useCookies } from "react-cookie";
 
 export const AccountPopover = (props) => {
   const { anchorEl, onClose, open, ...other } = props;
-  const [cookies, setCookie, removeCookie] = useCookies(["admin"]);
+  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
   const authContext = useContext(AuthContext);
   const [userData, setUserData] = useState({});
   const dispatch = useDispatch();
 
   let data = useSelector((state) => (state.Profile.itemList ? state.Profile.itemList : []));
   useEffect(() => {
-    getAdminApiCall(data.access_token);
+    getAdminApiCall(cookies.token);
   }, []);
   const getAdminApiCall = async (token) => {
     await axios
-      .get(process.env.NEXT_PUBLIC_BASE_URL + "getProfile", {
+      .get(process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "getProfile", {
         headers: {
           authorization: token,
         },

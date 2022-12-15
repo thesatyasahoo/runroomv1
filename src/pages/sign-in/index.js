@@ -37,8 +37,8 @@ const Page = () => {
     mesage: "",
     color: "info",
   });
-  let url = process.env.NEXT_PUBLIC_BASE_URL + "login";
-  let urlMobile = process.env.NEXT_PUBLIC_BASE_URL + "forgotPassword/";
+  let url = process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "login";
+  let urlMobile = process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "forgotPassword/";
   const dispatch = useDispatch();
   const authContext = useAuthContext();
   const formik = useFormik({
@@ -70,8 +70,8 @@ const Page = () => {
               // helpers.setSubmitting(true);
               authContext.signIn(res.data);
               setCookie("token", res.data.access_token);
-              setCookie("admin", res.data);
-              dispatch(AccountHolderActions.addProfile(res.data));
+              setCookie("admin", token);
+              dispatch(AccountHolderActions.addProfile(token));
               Router.push("/").catch(console.error);
             } else {
               handleClick(res.data.msg, "error");

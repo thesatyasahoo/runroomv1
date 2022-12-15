@@ -17,9 +17,11 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import axios from "axios";
+import { useCookies } from "react-cookie";
 
 export const AccountProfileDetails = (props) => {
   const [openDialog, setOpenDialog] = useState(false);
+  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
   const [password, setPassword] = useState({
     oldPassword: "",
     newPassword: "",
@@ -37,7 +39,7 @@ export const AccountProfileDetails = (props) => {
     status: 0,
     message: "",
   });
-  let urlMobile = process.env.NEXT_PUBLIC_BASE_URL + "resetPassword/";
+  let urlMobile = process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "resetPassword/";
   let token = useSelector((state) => (state.Profile.itemList ? state.Profile.itemList : []));
   let account_holder = useSelector((state) => (state.Profile.item ? state.Profile.item : []));
   const [values, setValues] = useState({
@@ -82,7 +84,7 @@ export const AccountProfileDetails = (props) => {
         await axios
           .put(urlMobile.toString() + account_holder.email, password, {
             headers: {
-              authorization: token.access_token,
+              authorization: cookies.token,
             },
           })
           .then((res) => {
