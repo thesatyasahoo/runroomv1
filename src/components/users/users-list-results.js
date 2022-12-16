@@ -358,14 +358,14 @@ export const UsersListResults = ({ ...rest }) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {adminArray.length > 0
-                  ? adminArray.map((adminArray) => (
-                      <TableRow
-                        hover
-                        key={adminArray._id}
-                        selected={selectedCustomerIds.indexOf(adminArray._id) !== -1}
-                      >
-                        {/* <TableCell padding="checkbox">
+                {adminArray.length > 0 ? (
+                  adminArray.map((adminArray) => (
+                    <TableRow
+                      hover
+                      key={adminArray._id}
+                      selected={selectedCustomerIds.indexOf(adminArray._id) !== -1}
+                    >
+                      {/* <TableCell padding="checkbox">
                           <Checkbox
                             checked={selectedCustomerIds.indexOf(adminArray._id) !== -1}
                             onChange={(event) => handleSelectOne(event, adminArray._id)}
@@ -373,42 +373,52 @@ export const UsersListResults = ({ ...rest }) => {
                           />
                         </TableCell> */}
 
-                        <TableCell>
-                          {adminArray.createdAt
-                            ? new Date(adminArray.createdAt).toLocaleDateString()
-                            : null}
-                        </TableCell>
-                        <TableCell>
-                          {adminArray.firstname
-                            ? adminArray.firstname + " " + adminArray.lastname
-                            : null}
-                        </TableCell>
-                        <TableCell>{adminArray.mobile ? adminArray.mobile : null}</TableCell>
-                        <TableCell>
-                          {adminArray.ethMnemonic && adminArray.ethMnemonic.length > 20
-                            ? adminArray.ethMnemonic.slice(0, 20)
-                            : adminArray.ethMnemonic}
-                        </TableCell>
-                        <TableCell>
-                          <VisibilityRoundedIcon
-                            color="info"
-                            onClick={() => handleView(adminArray)}
-                            style={{ marginRight: "0.3rem", cursor: "pointer" }}
-                          />
-                          <SaveAsRoundedIcon
-                            color="success"
-                            onClick={() => handleUpdate(adminArray)}
-                            style={{ marginRight: "0.3rem", cursor: "pointer" }}
-                          />
-                          <DeleteForeverIcon
-                            color="success"
-                            onClick={() => removeEvents(adminArray)}
-                            style={{ cursor: "pointer", color: "red" }}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  : null}
+                      <TableCell>
+                        {adminArray.createdAt
+                          ? new Date(adminArray.createdAt).toLocaleDateString()
+                          : null}
+                      </TableCell>
+                      <TableCell>
+                        {adminArray.firstname
+                          ? adminArray.firstname + " " + adminArray.lastname
+                          : null}
+                      </TableCell>
+                      <TableCell>{adminArray.mobile ? adminArray.mobile : null}</TableCell>
+                      <TableCell>
+                        {adminArray.ethMnemonic && adminArray.ethMnemonic.length > 20
+                          ? adminArray.ethMnemonic.slice(0, 20)
+                          : adminArray.ethMnemonic}
+                      </TableCell>
+                      <TableCell>
+                        <VisibilityRoundedIcon
+                          color="info"
+                          onClick={() => handleView(adminArray)}
+                          style={{ marginRight: "0.3rem", cursor: "pointer" }}
+                        />
+                        <SaveAsRoundedIcon
+                          color="success"
+                          onClick={() => handleUpdate(adminArray)}
+                          style={{ marginRight: "0.3rem", cursor: "pointer" }}
+                        />
+                        <DeleteForeverIcon
+                          color="success"
+                          onClick={() => removeEvents(adminArray)}
+                          style={{ cursor: "pointer", color: "red" }}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow
+                    hover
+                    key={adminArray._id}
+                    selected={selectedCustomerIds.indexOf(adminArray._id) !== -1}
+                  >
+                    <TableCell colSpan={5} style={{ textAlign: "center", paddingTop: "2rem" }}>
+                      <CircularProgress color="primary" size={80} style={{ marginLeft: "2rem" }} />
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </Box>

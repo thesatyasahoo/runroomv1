@@ -65,6 +65,7 @@ export const RunroomListResults = ({ ...rest }) => {
     getRunRoomCall(cookies.token);
   }, []);
   const getRunRoomCall = async (token) => {
+    // setLoading(true);
     await axios
       .get(process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "runRoomList", {
         headers: {
@@ -82,6 +83,7 @@ export const RunroomListResults = ({ ...rest }) => {
         //   })
         // })
         setAdminArray(res.data.roomList);
+        // setLoading(false);
         // dispatch(RunroomActions.addToAdmin(res.data.roomList));
       })
       .catch((err) => {
@@ -332,51 +334,51 @@ export const RunroomListResults = ({ ...rest }) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {adminArray.length > 0
-                  ? adminArray.map((adminArray) => (
-                      <TableRow
-                        hover
-                        key={adminArray._id}
-                        selected={selectedCustomerIds.indexOf(adminArray._id) !== -1}
-                      >
-                        {/* <TableCell padding="checkbox">
-                          <Checkbox
-                            checked={selectedCustomerIds.indexOf(adminArray._id) !== -1}
-                            onChange={(event) => handleSelectOne(event, adminArray._id)}
-                            value="true"
-                          />
-                        </TableCell> */}
-
-                        <TableCell>
-                          {adminArray.createdAt
-                            ? new Date(adminArray.createdAt).toLocaleDateString()
-                            : null}
-                        </TableCell>
-                        <TableCell>{adminArray.createdBy ? adminArray.createdBy : null}</TableCell>
-                        <TableCell>{adminArray.distance ? adminArray.distance : null}</TableCell>
-                        <TableCell>
-                          {adminArray.run_status ? adminArray.run_status : null}
-                        </TableCell>
-                        <TableCell>
-                          <VisibilityRoundedIcon
-                            color="info"
-                            onClick={() => handleView(adminArray)}
-                            style={{ marginRight: "0.3rem", cursor: "pointer" }}
-                          />
-                          <SaveAsRoundedIcon
-                            color="success"
-                            onClick={() => handleUpdate(adminArray)}
-                            style={{ marginRight: "0.3rem", cursor: "pointer" }}
-                          />
-                          <DeleteForeverIcon
-                            color="success"
-                            onClick={() => removeEvents(adminArray)}
-                            style={{ cursor: "pointer", color: "red" }}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  : null}
+                {adminArray.length > 0 ? (
+                  adminArray.map((adminArray) => (
+                    <TableRow
+                      hover
+                      key={adminArray._id}
+                      selected={selectedCustomerIds.indexOf(adminArray._id) !== -1}
+                    >
+                      <TableCell>
+                        {adminArray.createdAt
+                          ? new Date(adminArray.createdAt).toLocaleDateString()
+                          : null}
+                      </TableCell>
+                      <TableCell>{adminArray.createdBy ? adminArray.createdBy : null}</TableCell>
+                      <TableCell>{adminArray.distance ? adminArray.distance : null}</TableCell>
+                      <TableCell>{adminArray.run_status ? adminArray.run_status : null}</TableCell>
+                      <TableCell>
+                        <VisibilityRoundedIcon
+                          color="info"
+                          onClick={() => handleView(adminArray)}
+                          style={{ marginRight: "0.3rem", cursor: "pointer" }}
+                        />
+                        <SaveAsRoundedIcon
+                          color="success"
+                          onClick={() => handleUpdate(adminArray)}
+                          style={{ marginRight: "0.3rem", cursor: "pointer" }}
+                        />
+                        <DeleteForeverIcon
+                          color="success"
+                          onClick={() => removeEvents(adminArray)}
+                          style={{ cursor: "pointer", color: "red" }}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow
+                    hover
+                    key={adminArray._id}
+                    selected={selectedCustomerIds.indexOf(adminArray._id) !== -1}
+                  >
+                    <TableCell colSpan={5} style={{ textAlign: "center", paddingTop: "2rem" }}>
+                      <CircularProgress color="primary" size={80} style={{ marginLeft: "2rem" }} />
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </Box>
