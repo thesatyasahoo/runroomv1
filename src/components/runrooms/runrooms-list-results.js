@@ -30,9 +30,11 @@ import { useCookies } from "react-cookie";
 
 export const RunroomListResults = ({ ...rest }) => {
   const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+  const [img, setImage] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedCustomerIds, setSelectedCustomerIds] = useState([]);
   const [limit, setLimit] = useState(10);
+  const [selectedFile, setSelectedFile] = useState(null);
   const [page, setPage] = useState(0);
   const [adminArray, setAdminArray] = useState([]);
   const dispatch = useDispatch();
@@ -41,23 +43,11 @@ export const RunroomListResults = ({ ...rest }) => {
   const [openDialog1, setOpenDialog1] = useState(false);
   const [viewDialogObj, setViewDialogObj] = useState({});
   const [update, setUpdate] = useState({
-    createdAt: 0,
-    description: "",
-    front_image: "",
+    type: "",
+    distance: "",
+    duration: "",
     image: "",
-    invite_users: [""],
-    member_enroll: "",
-    name: "",
-    payment_type: "",
-    run_setup: "",
-    runroom_id: [],
-    squadType: 1,
-    squad_leaders: [""],
-    squad_runners: [""],
-    timezone: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    user_id: "",
-    visibility_type: "1",
+    time_date: "",
   });
 
   const { user } = useAuthContext();
@@ -113,23 +103,10 @@ export const RunroomListResults = ({ ...rest }) => {
     dialogClickOpen();
     setDialogObj(el);
     setUpdate({
-      createdAt: el.createdAt ? el.createdAt : new Date().toISOString(),
-      description: el.description ? el.description : "",
-      front_image: el.front_image ? el.front_image : "",
-      image: el.image ? el.image : "",
-      invite_users: el.image ? el.image : [""],
-      member_enroll: el.member_enroll ? el.member_enroll : "",
-      name: el.name ? el.name : "",
-      payment_type: el.payment_type ? el.payment_type : "",
-      run_setup: el.run_setup ? el.run_setup : "",
-      runroom_id: el.runroom_id ? el.runroom_id : [""],
-      squadType: el.squadType ? el.squadType : 1,
-      squad_leaders: el.squad_leaders ? el.squad_leaders : [""],
-      squad_runners: el.squad_runners ? el.squad_runners : [""],
-      timezone: el.timezone ? el.timezone : new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      user_id: el.user_id ? el.user_id : "",
-      visibility_type: el.visibility_type ? el.visibility_type : "1",
+      type: el.type ? el.type : "",
+      distance: el.distance ? el.distance : "",
+      duration: el.duration ? el.duration : "",
+      time_date: el.time_date ? el.time_date : new Date().toISOString(),
     });
   };
   const dialogClose = () => {
@@ -141,44 +118,84 @@ export const RunroomListResults = ({ ...rest }) => {
   const dialogClose1 = () => {
     setOpenDialog1(false);
   };
-  const handleSelectAll = (event) => {
-    let newSelectedCustomerIds;
-
-    if (event.target.checked) {
-      newSelectedCustomerIds = adminArray.map((admin) => admin._id);
-    } else {
-      newSelectedCustomerIds = [];
-    }
-
-    setSelectedCustomerIds(newSelectedCustomerIds);
-  };
-
-  const handleSelectOne = (event, _id) => {
-    const selectedIndex = selectedCustomerIds.indexOf(_id);
-    let newSelectedCustomerIds = [];
-
-    if (selectedIndex === -1) {
-      newSelectedCustomerIds = newSelectedCustomerIds.concat(selectedCustomerIds, _id);
-    } else if (selectedIndex === 0) {
-      newSelectedCustomerIds = newSelectedCustomerIds.concat(selectedCustomerIds.slice(1));
-    } else if (selectedIndex === selectedCustomerIds.length - 1) {
-      newSelectedCustomerIds = newSelectedCustomerIds.concat(selectedCustomerIds.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelectedCustomerIds = newSelectedCustomerIds.concat(
-        selectedCustomerIds.slice(0, selectedIndex),
-        selectedCustomerIds.slice(selectedIndex + 1)
-      );
-    }
-
-    setSelectedCustomerIds(newSelectedCustomerIds);
-  };
-
   const handleLimitChange = (event) => {
     setLimit(event.target.value);
   };
 
   const handlePageChange = (event, newPage) => {
     setPage(newPage);
+  };
+
+  const onFileChange = async (event) => {
+    console.log(event.target.files[0]);
+    setLoading(true);
+    let bytes = event.target.files[0].size;
+    if (!+bytes) return "0 Bytes";
+
+    const k = 1024;
+    const dm = 2 < 0 ? 0 : 2;
+    const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    let final_image_size = `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+    if (bytes > 600000) {
+      setLoading(false);
+      return alert(
+        "Image size should not greater then 600 kb, your upload file size is " + final_image_size
+      );
+    }
+    setSelectedFile(event.target.files[0]);
+    // Create an object of formData
+    const formData = new FormData();
+
+    // Update the formData object
+    formData.append("image", event.target.files[0], event.target.files[0].name);
+
+    // Details of the uploaded file
+    // Request made to the backend api
+    // Send formData object
+    return await axios
+      .put(
+        process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "upload_runroom_pic/" + dialogObj._id,
+        formData,
+        {
+          headers: {
+            authorization: cookies.token,
+          },
+        }
+      )
+      .then((res) => {
+        // console.log(res.data.path);
+        setUpdate({ ...update, image: res.data.path });
+        setLoading(false);
+        return setImage(res.data.path);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const handleUpdateRoom = async (data) => {
+    await axios
+      .put(process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "roomUpdate/" + dialogObj._id, data, {
+        headers: {
+          authorization: cookies.token,
+        },
+      })
+      .then((res) => {
+        getRunRoomCall(cookies.token);
+        setUpdate({
+          type: "",
+          distance: "",
+          duration: "",
+          time_date: [""],
+        });
+        setDialogObj({});
+        dialogClose();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
@@ -204,11 +221,18 @@ export const RunroomListResults = ({ ...rest }) => {
             <tbody>
               <tr>
                 <td scope="row" style={{ paddingRight: "3rem" }}>
-                  Name : {viewDialogObj.name ? viewDialogObj.name : "NA"}
+                  Created By : {viewDialogObj.createdBy ? viewDialogObj.createdBy : "NA"}
                 </td>
-                <td>
-                  Payment Type : {viewDialogObj.payment_type ? viewDialogObj.payment_type : "NA"}
+                <td>Distance : {viewDialogObj.distance ? viewDialogObj.distance : "NA"}</td>
+              </tr>
+              <tr>
+                <td scope="row" style={{ paddingRight: "3rem" }}>
+                  Duration :{" "}
+                  {viewDialogObj.duration
+                    ? new Date(viewDialogObj.duration).toLocaleDateString()
+                    : "No Date Available"}
                 </td>
+                <td>Status : {viewDialogObj.run_status ? viewDialogObj.run_status : "NA"}</td>
               </tr>
             </tbody>
           </table>
@@ -239,13 +263,13 @@ export const RunroomListResults = ({ ...rest }) => {
             <TextField
               style={{ marginBottom: "1rem", marginTop: "1rem" }}
               fullWidth
-              label="Name"
-              name="name"
+              label="Type"
+              name="type"
               type="text"
-              defaultValue={dialogObj.name}
+              defaultValue={dialogObj.type}
               // value={update.firstname}
               onChange={(e) => {
-                setUpdate({ ...update, name: e.target.value });
+                setUpdate({ ...update, type: e.target.value });
               }}
               variant="outlined"
             />
@@ -255,12 +279,12 @@ export const RunroomListResults = ({ ...rest }) => {
               style={{ marginBottom: "1rem", marginTop: "1rem" }}
               fullWidth
               label="Distance"
-              name="payment_type"
+              name="distance"
               type="text"
-              defaultValue={dialogObj.payment_type}
+              defaultValue={dialogObj.distance}
               // value={update.location}
               onChange={(e) => {
-                setUpdate({ ...update, payment_type: e.target.value });
+                setUpdate({ ...update, distance: e.target.value });
               }}
               variant="outlined"
             />
@@ -269,16 +293,25 @@ export const RunroomListResults = ({ ...rest }) => {
             <TextField
               style={{ marginBottom: "1rem", marginTop: "1rem" }}
               fullWidth
-              label="Run Status"
-              name="run_setup"
-              type="text"
-              defaultValue={dialogObj.run_setup}
+              label="Duration"
+              name="duration"
+              type="date"
+              defaultValue={
+                dialogObj.duration
+                  ? new Date(dialogObj.duration).toISOString().slice(0, 10)
+                  : new Date()
+              }
               // value={update.organizerEmail}
               onChange={(e) => {
-                setUpdate({ ...update, run_setup: e.target.value });
+                setUpdate({ ...update, duration: new Date(e.target.value).toISOString() });
               }}
               variant="outlined"
             />
+          </div>
+          <div>
+            <Form.Group controlId="formFile" className="mb-3">
+              <Form.Control type="file" onChange={(e) => onFileChange(e)} />
+            </Form.Group>
           </div>
         </DialogContent>
         <DialogActions>
@@ -315,21 +348,12 @@ export const RunroomListResults = ({ ...rest }) => {
             <Table>
               <TableHead>
                 <TableRow>
-                  {/* <TableCell padding="checkbox">
-                    <Checkbox
-                      checked={selectedCustomerIds.length === adminArray.length}
-                      color="primary"
-                      indeterminate={
-                        selectedCustomerIds.length > 0 &&
-                        selectedCustomerIds.length < adminArray.length
-                      }
-                      onChange={handleSelectAll}
-                    />
-                  </TableCell> */}
+                  <TableCell>Logo</TableCell>
                   <TableCell>Created At</TableCell>
                   <TableCell>Created By</TableCell>
                   <TableCell>Distance</TableCell>
                   <TableCell>Run Status</TableCell>
+                  <TableCell>Duration</TableCell>
                   <TableCell>Action</TableCell>
                 </TableRow>
               </TableHead>
@@ -342,6 +366,17 @@ export const RunroomListResults = ({ ...rest }) => {
                       selected={selectedCustomerIds.indexOf(adminArray._id) !== -1}
                     >
                       <TableCell>
+                        <img
+                          alt={"...loading"}
+                          src={adminArray.image}
+                          style={{
+                            height: "3rem",
+                            width: "3rem",
+                            borderRadius: "50%",
+                          }}
+                        />{" "}
+                      </TableCell>
+                      <TableCell>
                         {adminArray.createdAt
                           ? new Date(adminArray.createdAt).toLocaleDateString()
                           : null}
@@ -349,6 +384,11 @@ export const RunroomListResults = ({ ...rest }) => {
                       <TableCell>{adminArray.createdBy ? adminArray.createdBy : null}</TableCell>
                       <TableCell>{adminArray.distance ? adminArray.distance : null}</TableCell>
                       <TableCell>{adminArray.run_status ? adminArray.run_status : null}</TableCell>
+                      <TableCell>
+                        {adminArray.duration
+                          ? new Date(adminArray.duration).toISOString().slice(0, 10)
+                          : null}
+                      </TableCell>
                       <TableCell>
                         <VisibilityRoundedIcon
                           color="info"
