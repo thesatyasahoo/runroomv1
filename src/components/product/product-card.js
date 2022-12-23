@@ -93,7 +93,7 @@ export const ProductCard = ({ ...rest }) => {
     setViewDialogObj(el);
   };
   const removeEvents = async (el) => {
-    console.log(el);
+    setLoading(true);
     await axios
       .delete(process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "deleteProduct/" + el._id, {
         headers: {
@@ -102,9 +102,11 @@ export const ProductCard = ({ ...rest }) => {
       })
       .then((res) => {
         getRunRoomCall(cookies.token);
+        setLoading(false);
       })
       .catch((err) => {
         console.log(err);
+        setLoading(false);
       });
   };
   const handleUpdate = async (el) => {
@@ -142,7 +144,9 @@ export const ProductCard = ({ ...rest }) => {
   const handlePageChange = (event, newPage) => {
     setPage(newPage);
   };
-
+  useEffect(() => {
+    getRunRoomCall(cookies.token);
+  }, []);
   return (
     <>
       <Snackbar
@@ -293,7 +297,7 @@ export const ProductCard = ({ ...rest }) => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {adminArray.length > 0 ? (
+                {adminArray.length > 0 && loading === false ? (
                   adminArray.map((adminArray) => (
                     <TableRow
                       hover
