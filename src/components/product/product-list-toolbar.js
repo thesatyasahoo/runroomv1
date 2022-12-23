@@ -1,16 +1,5 @@
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  TextField,
-  InputAdornment,
-  SvgIcon,
-  Typography,
-} from "@mui/material";
-import { Download as DownloadIcon } from "../../icons/download";
-import { Search as SearchIcon } from "../../icons/search";
-import { Upload as UploadIcon } from "../../icons/upload";
+import { Typography, Button, Box } from "@mui/material";
+import Router from "next/router";
 
 export const ProductListToolbar = (props) => (
   <Box {...props}>
@@ -26,8 +15,18 @@ export const ProductListToolbar = (props) => (
       <Typography sx={{ m: 1 }} variant="h5">
         Products
       </Typography>
-      <Box sx={{ minWidth: 500 }}>
-        {/* <TextField
+      {/* <Box sx={{ minWidth: 500 }}> */}
+      <Button
+        size="mideium"
+        sx={{ mt: 2 }}
+        variant="contained"
+        onClick={() => {
+          Router.push("/productCreate").catch(console.error);
+        }}
+      >
+        Add Product
+      </Button>
+      {/* <TextField
           fullWidth
           InputProps={{
             startAdornment: (
@@ -41,7 +40,7 @@ export const ProductListToolbar = (props) => (
           placeholder="Search admin"
           variant="outlined"
         /> */}
-      </Box>
+      {/* </Box> */}
     </Box>
     {/* <Box sx={{ mt: 3 }}>
       <Card>

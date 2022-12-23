@@ -93,9 +93,9 @@ export const ProductCard = ({ ...rest }) => {
     setViewDialogObj(el);
   };
   const removeEvents = async (el) => {
-    // console.log(el);
+    console.log(el);
     await axios
-      .delete(process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "delete-squad/" + el.id, {
+      .delete(process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "deleteProduct/" + el._id, {
         headers: {
           authorization: cookies.token,
         },
@@ -107,28 +107,23 @@ export const ProductCard = ({ ...rest }) => {
         console.log(err);
       });
   };
-  const handleUpdate = (el) => {
+  const handleUpdate = async (el) => {
     dialogClickOpen();
     setDialogObj(el);
-    setUpdate({
-      createdAt: el.createdAt ? el.createdAt : new Date().toISOString(),
-      description: el.description ? el.description : "",
-      front_image: el.front_image ? el.front_image : "",
-      image: el.image ? el.image : "",
-      invite_users: el.image ? el.image : [""],
-      member_enroll: el.member_enroll ? el.member_enroll : "",
-      name: el.name ? el.name : "",
-      payment_type: el.payment_type ? el.payment_type : "",
-      run_setup: el.run_setup ? el.run_setup : "",
-      runroom_id: el.runroom_id ? el.runroom_id : [""],
-      squadType: el.squadType ? el.squadType : 1,
-      squad_leaders: el.squad_leaders ? el.squad_leaders : [""],
-      squad_runners: el.squad_runners ? el.squad_runners : [""],
-      timezone: el.timezone ? el.timezone : new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      user_id: el.user_id ? el.user_id : "",
-      visibility_type: el.visibility_type ? el.visibility_type : "1",
-    });
+    await axios
+      .put(process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "editProduct/" + el._id, el, {
+        headers: {
+          authorization: cookies.token,
+        },
+      })
+      .then((res) => {
+        getRoChamCall(cookies.token);
+        setDialogObj({});
+        dialogClose();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
   const dialogClose = () => {
     setOpenDialog(false);
@@ -138,37 +133,6 @@ export const ProductCard = ({ ...rest }) => {
   };
   const dialogClose1 = () => {
     setOpenDialog1(false);
-  };
-  const handleSelectAll = (event) => {
-    let newSelectedCustomerIds;
-
-    if (event.target.checked) {
-      newSelectedCustomerIds = adminArray.map((admin) => admin._id);
-    } else {
-      newSelectedCustomerIds = [];
-    }
-
-    setSelectedCustomerIds(newSelectedCustomerIds);
-  };
-
-  const handleSelectOne = (event, _id) => {
-    const selectedIndex = selectedCustomerIds.indexOf(_id);
-    let newSelectedCustomerIds = [];
-
-    if (selectedIndex === -1) {
-      newSelectedCustomerIds = newSelectedCustomerIds.concat(selectedCustomerIds, _id);
-    } else if (selectedIndex === 0) {
-      newSelectedCustomerIds = newSelectedCustomerIds.concat(selectedCustomerIds.slice(1));
-    } else if (selectedIndex === selectedCustomerIds.length - 1) {
-      newSelectedCustomerIds = newSelectedCustomerIds.concat(selectedCustomerIds.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelectedCustomerIds = newSelectedCustomerIds.concat(
-        selectedCustomerIds.slice(0, selectedIndex),
-        selectedCustomerIds.slice(selectedIndex + 1)
-      );
-    }
-
-    setSelectedCustomerIds(newSelectedCustomerIds);
   };
 
   const handleLimitChange = (event) => {
@@ -287,7 +251,7 @@ export const ProductCard = ({ ...rest }) => {
               fullWidth
               size="small"
               sx={{ mt: 2 }}
-              onClick={(el) => handleUpdateRoom(update)}
+              onClick={(el) => handleUpdate(update)}
               variant="contained"
             >
               Update
