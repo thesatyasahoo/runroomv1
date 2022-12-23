@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
-import { RunroomActions } from "../../store/runRoom";
+import Form from "react-bootstrap/Form";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import SaveAsRoundedIcon from "@mui/icons-material/SaveAsRounded";
@@ -41,23 +41,14 @@ export const ProductCard = ({ ...rest }) => {
   const [openDialog1, setOpenDialog1] = useState(false);
   const [viewDialogObj, setViewDialogObj] = useState({});
   const [update, setUpdate] = useState({
-    createdAt: 0,
-    description: "",
-    front_image: "",
+    _id: "",
+    prod_name: "",
+    prod_category: "",
+    price: "",
+    added_by: "",
+    prod_description: [""],
     image: "",
-    invite_users: [""],
-    member_enroll: "",
-    name: "",
-    payment_type: "",
-    run_setup: "",
-    runroom_id: [],
-    squadType: 1,
-    squad_leaders: [""],
-    squad_runners: [""],
-    timezone: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    user_id: "",
-    visibility_type: "1",
+    prod_size: "",
   });
 
   const { user } = useAuthContext();
@@ -110,8 +101,14 @@ export const ProductCard = ({ ...rest }) => {
       });
   };
   const handleUpdate = async (el) => {
+    setUpdate({ ...update, _id: el._id });
+    console.log(el);
     dialogClickOpen();
     setDialogObj(el);
+  };
+  const handleUpdateProduct = async (el) => {
+    console.log(el);
+    console.log(update);
     await axios
       .put(process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "editProduct/" + el._id, el, {
         headers: {
@@ -119,11 +116,56 @@ export const ProductCard = ({ ...rest }) => {
         },
       })
       .then((res) => {
-        getRoChamCall(cookies.token);
+        getRunRoomCall(cookies.token);
         setDialogObj({});
         dialogClose();
       })
       .catch((err) => {
+        console.log(err);
+      });
+  };
+  const onFileChange = async (event) => {
+    console.log(update);
+    console.log(dialogObj);
+    setLoading(true);
+    let bytes = event.target.files[0].size;
+    if (!+bytes) return "0 Bytes";
+
+    const k = 1024;
+    const dm = 2 < 0 ? 0 : 2;
+    const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    let final_image_size = `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+    if (bytes > 600000) {
+      setLoading(false);
+      return alert(
+        "Image size should not greater then 600 kb, your upload file size is " + final_image_size
+      );
+    }
+    // setSelectedFile(event.target.files[0]);
+    // Create an object of formData
+    const formData = new FormData();
+
+    // Update the formData object
+    formData.append("image", event.target.files[0], event.target.files[0].name);
+
+    // Details of the uploaded file
+    // Request made to the backend api
+    // Send formData object
+    return await axios
+      .put(process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "addProdPic/" + dialogObj._id, formData, {
+        headers: {
+          authorization: cookies.token,
+        },
+      })
+      .then((res) => {
+        setLoading(false);
+        setUpdate({ ...update, image: res.data.url });
+      })
+      .catch((err) => {
+        setLoading(false);
         console.log(err);
       });
   };
@@ -218,6 +260,22 @@ export const ProductCard = ({ ...rest }) => {
             <TextField
               style={{ marginBottom: "1rem", marginTop: "1rem" }}
               fullWidth
+              label="Product Category"
+              name="prod_category"
+              type="text"
+              defaultValue={dialogObj.prod_category}
+              // value={update.location}
+              onChange={(e) => {
+                setUpdate({ ...update, prod_category: e.target.value });
+              }}
+              variant="outlined"
+            />
+          </div>
+
+          <div>
+            <TextField
+              style={{ marginBottom: "1rem", marginTop: "1rem" }}
+              fullWidth
               label="Price"
               name="price"
               type="text"
@@ -228,6 +286,60 @@ export const ProductCard = ({ ...rest }) => {
               }}
               variant="outlined"
             />
+          </div>
+          <div>
+            <TextField
+              style={{ marginBottom: "1rem", marginTop: "1rem" }}
+              fullWidth
+              label="Author"
+              name="added_by"
+              type="text"
+              defaultValue={dialogObj.added_by}
+              // value={update.location}
+              onChange={(e) => {
+                setUpdate({ ...update, added_by: e.target.value });
+              }}
+              variant="outlined"
+            />
+          </div>
+          <div>
+            <TextField
+              style={{ marginBottom: "1rem", marginTop: "1rem" }}
+              fullWidth
+              label="Description"
+              name="prod_description"
+              type="text"
+              defaultValue={dialogObj.prod_description}
+              // value={update.location}
+              onChange={(e) => {
+                setUpdate({ ...update, prod_description: e.target.value });
+              }}
+              variant="outlined"
+            />
+          </div>
+          <div>
+            <TextField
+              style={{ marginBottom: "1rem", marginTop: "1rem" }}
+              fullWidth
+              label="Size"
+              name="prod_size"
+              type="text"
+              defaultValue={dialogObj.prod_size}
+              // value={update.location}
+              onChange={(e) => {
+                setUpdate({ ...update, prod_size: e.target.value });
+              }}
+              variant="outlined"
+            />
+          </div>
+          <div>
+            <Form.Group controlId="formFile" className="mb-3" style={{ width: "100%" }}>
+              <Form.Control
+                type="file"
+                style={{ width: "100%" }}
+                onChange={(e) => onFileChange(e)}
+              />
+            </Form.Group>
           </div>
           {/* <div>
             <TextField
@@ -255,7 +367,7 @@ export const ProductCard = ({ ...rest }) => {
               fullWidth
               size="small"
               sx={{ mt: 2 }}
-              onClick={(el) => handleUpdate(update)}
+              onClick={(el) => handleUpdateProduct(update)}
               variant="contained"
             >
               Update
