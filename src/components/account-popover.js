@@ -15,11 +15,12 @@ export const AccountPopover = (props) => {
   const authContext = useContext(AuthContext);
   const [userData, setUserData] = useState({});
   const dispatch = useDispatch();
+  const data = cookies.account;
 
-  let data = useSelector((state) => (state.Profile.itemList ? state.Profile.itemList : []));
+  // let data = useSelector((state) => (state.Profile.itemList ? state.Profile.itemList : []));
   useEffect(() => {
     getAdminApiCall(cookies.token);
-  }, []);
+  }, [cookies]);
   const getAdminApiCall = async (token) => {
     await axios
       .get(process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "getProfile", {
@@ -29,6 +30,7 @@ export const AccountPopover = (props) => {
       })
       .then((res) => {
         setUserData(res.data.userList[0]);
+        setCookie("account", res.data.userList[0]);
         dispatch(AccountHolderActions.addItem(res.data.userList[0]));
       })
       .catch((err) => {
@@ -97,7 +99,10 @@ export const AccountPopover = (props) => {
       >
         <Typography variant="overline">Account</Typography>
         <Typography color="text.secondary" variant="body2">
-          {!userData.name ? "NA" : userData.name}
+          {!data ? "NA" : data.name}
+        </Typography>
+        <Typography color="text.secondary" variant="body2">
+          {!data ? "NA" : data.email}
         </Typography>
       </Box>
       <MenuList

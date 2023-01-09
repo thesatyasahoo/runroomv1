@@ -21,7 +21,6 @@ const user = {
 
 export const AccountProfile = (props) => {
   let data = useSelector((state) => (state.Profile.item ? state.Profile.item : []));
-  console.log(data)
   return (
     <Card {...props}>
       <CardContent>
@@ -35,9 +34,9 @@ export const AccountProfile = (props) => {
           <Avatar
             src={user.avatar}
             sx={{
-              height: 64,
+              height: "30%",
               mb: 2,
-              width: 64,
+              width: "30%",
             }}
           />
           <Typography color="textPrimary" gutterBottom variant="h5">

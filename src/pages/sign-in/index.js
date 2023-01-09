@@ -147,7 +147,7 @@ const Page = () => {
   return (
     <>
       <Head>
-        <title>Sign in | RunRoom</title>
+        <title>Sign in</title>
       </Head>
       <Box
         component="main"

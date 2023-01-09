@@ -27,6 +27,8 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useCookies } from "react-cookie";
+import Paper from "@mui/material/Paper";
+import TableContainer from "@mui/material/TableContainer";
 
 export const RunroomListResults = ({ ...rest }) => {
   const [cookies, setCookie, removeCookie] = useCookies(["token"]);
@@ -45,8 +47,6 @@ export const RunroomListResults = ({ ...rest }) => {
   const [update, setUpdate] = useState({
     type: "",
     distance: "",
-    duration: "",
-    image: "",
     time_date: "",
   });
 
@@ -105,8 +105,10 @@ export const RunroomListResults = ({ ...rest }) => {
     setUpdate({
       type: el.type ? el.type : "",
       distance: el.distance ? el.distance : "",
-      duration: el.duration ? el.duration : "",
+      // duration: el.duration ? el.duration : "",
       time_date: el.time_date ? el.time_date : new Date().toISOString(),
+      // createdBy: "Admin",
+      // image: "https://raw.githubusercontent.com/thesatyasahoo/My-codes/master/user.png",
     });
   };
   const dialogClose = () => {
@@ -342,87 +344,85 @@ export const RunroomListResults = ({ ...rest }) => {
           </Button>
         </DialogActions>
       </Dialog>
-      <Card {...rest}>
-        <PerfectScrollbar>
-          <Box sx={{ minWidth: 1050 }}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Logo</TableCell>
-                  <TableCell>Created At</TableCell>
-                  <TableCell>Created By</TableCell>
-                  <TableCell>Distance</TableCell>
-                  <TableCell>Run Status</TableCell>
-                  <TableCell>Duration</TableCell>
-                  <TableCell>Action</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {adminArray.length > 0 ? (
-                  adminArray.map((adminArray) => (
-                    <TableRow
-                      hover
-                      key={adminArray._id}
-                      selected={selectedCustomerIds.indexOf(adminArray._id) !== -1}
-                    >
-                      <TableCell>
-                        <img
-                          alt={"...loading"}
-                          src={adminArray.image}
-                          style={{
-                            height: "3rem",
-                            width: "3rem",
-                            borderRadius: "50%",
-                          }}
-                        />{" "}
-                      </TableCell>
-                      <TableCell>
-                        {adminArray.createdAt
-                          ? new Date(adminArray.createdAt).toLocaleDateString()
-                          : null}
-                      </TableCell>
-                      <TableCell>{adminArray.createdBy ? adminArray.createdBy : null}</TableCell>
-                      <TableCell>{adminArray.distance ? adminArray.distance : null}</TableCell>
-                      <TableCell>{adminArray.run_status ? adminArray.run_status : null}</TableCell>
-                      <TableCell>
-                        {adminArray.duration
-                          ? new Date(adminArray.duration).toISOString().slice(0, 10)
-                          : null}
-                      </TableCell>
-                      <TableCell>
-                        <VisibilityRoundedIcon
-                          color="info"
-                          onClick={() => handleView(adminArray)}
-                          style={{ marginRight: "0.3rem", cursor: "pointer" }}
-                        />
-                        <SaveAsRoundedIcon
-                          color="success"
-                          onClick={() => handleUpdate(adminArray)}
-                          style={{ marginRight: "0.3rem", cursor: "pointer" }}
-                        />
-                        <DeleteForeverIcon
-                          color="success"
-                          onClick={() => removeEvents(adminArray)}
-                          style={{ cursor: "pointer", color: "red" }}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
+      <Card {...rest} sx={{ minWidth: "100%" }}>
+        <TableContainer component={Paper} sx={{ minWidth: "100%" }}>
+          <Table sx={{ minWidth: "100%" }}>
+            <TableHead>
+              <TableRow>
+                <TableCell>Logo</TableCell>
+                <TableCell>Created At</TableCell>
+                <TableCell>Created By</TableCell>
+                <TableCell>Distance</TableCell>
+                <TableCell>Run Status</TableCell>
+                <TableCell>Duration</TableCell>
+                <TableCell>Action</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {adminArray.length > 0 ? (
+                adminArray.map((adminArray) => (
                   <TableRow
                     hover
                     key={adminArray._id}
                     selected={selectedCustomerIds.indexOf(adminArray._id) !== -1}
                   >
-                    <TableCell colSpan={5} style={{ textAlign: "center", paddingTop: "2rem" }}>
-                      <CircularProgress color="primary" size={80} style={{ marginLeft: "2rem" }} />
+                    <TableCell>
+                      <img
+                        alt={"...loading"}
+                        src={adminArray.image}
+                        style={{
+                          height: "3rem",
+                          width: "3rem",
+                          borderRadius: "50%",
+                        }}
+                      />{" "}
+                    </TableCell>
+                    <TableCell>
+                      {adminArray.createdAt
+                        ? new Date(adminArray.createdAt).toLocaleDateString()
+                        : null}
+                    </TableCell>
+                    <TableCell>{adminArray.createdBy ? adminArray.createdBy : null}</TableCell>
+                    <TableCell>{adminArray.distance ? adminArray.distance : null}</TableCell>
+                    <TableCell>{adminArray.run_status ? adminArray.run_status : null}</TableCell>
+                    <TableCell>
+                      {adminArray.duration
+                        ? new Date(adminArray.duration).toISOString().slice(0, 10)
+                        : null}
+                    </TableCell>
+                    <TableCell>
+                      <VisibilityRoundedIcon
+                        color="info"
+                        onClick={() => handleView(adminArray)}
+                        style={{ marginRight: "0.3rem", cursor: "pointer" }}
+                      />
+                      <SaveAsRoundedIcon
+                        color="success"
+                        onClick={() => handleUpdate(adminArray)}
+                        style={{ marginRight: "0.3rem", cursor: "pointer" }}
+                      />
+                      <DeleteForeverIcon
+                        color="success"
+                        onClick={() => removeEvents(adminArray)}
+                        style={{ cursor: "pointer", color: "red" }}
+                      />
                     </TableCell>
                   </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </Box>
-        </PerfectScrollbar>
+                ))
+              ) : (
+                <TableRow
+                  hover
+                  key={adminArray._id}
+                  selected={selectedCustomerIds.indexOf(adminArray._id) !== -1}
+                >
+                  <TableCell colSpan={7} style={{ textAlign: "center", paddingTop: "2rem" }}>
+                    <CircularProgress color="primary" size={80} style={{ marginLeft: "2rem" }} />
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
         <TablePagination
           component="div"
           count={adminArray.length}

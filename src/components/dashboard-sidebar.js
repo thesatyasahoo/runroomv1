@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
 import PropTypes from "prop-types";
-import { Box, Button, Divider, Drawer, Typography, useMediaQuery } from "@mui/material";
+import { Box, Avatar, Divider, Drawer, Typography, useMediaQuery } from "@mui/material";
 import { ChartBar as ChartBarIcon } from "../icons/chart-bar";
 import { Users as UsersIcon } from "../icons/users";
 import { NavItem } from "./nav-item";
@@ -10,6 +10,9 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import Diversity3Icon from "@mui/icons-material/Diversity3";
 import LanIcon from "@mui/icons-material/Lan";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import { useCookies } from "react-cookie";
 
 const items = [
   {
@@ -17,12 +20,6 @@ const items = [
     icon: <ChartBarIcon fontSize="small" />,
     title: "Dashboard",
   },
-
-  // {
-  //   href: "/runroom",
-  //   icon: <UsersIcon fontSize="small" />,
-  //   title: "Create Runroom",
-  // },
   {
     href: "/runrooms",
     icon: <LanIcon fontSize="small" />,
@@ -43,41 +40,19 @@ const items = [
     icon: <AdminPanelSettingsIcon fontSize="small" />,
     title: "Products",
   },
-  // {
-  //   href: '/products',
-  //   icon: (<ShoppingBagIcon fontSize="small" />),
-  //   title: 'Products'
-  // },
   {
     href: "/account",
     icon: <AccountCircleIcon fontSize="small" />,
     title: "Account",
   },
-  // {
-  //   href: '/settings',
-  //   icon: (<CogIcon fontSize="small" />),
-  //   title: 'Settings'
-  // },
-  // {
-  //   href: '/login',
-  //   icon: (<LockIcon fontSize="small" />),
-  //   title: 'Login'
-  // },
-  // {
-  //   href: '/register',
-  //   icon: (<UserAddIcon fontSize="small" />),
-  //   title: 'Register'
-  // },
-  // {
-  //   href: '/404',
-  //   icon: (<XCircleIcon fontSize="small" />),
-  //   title: 'Error'
-  // }
 ];
 
 export const DashboardSidebar = (props) => {
   const { open, onClose } = props;
+  const [cookies, setCookie, removeCookie] = useCookies(["account"]);
+  let data = cookies.account;
   const router = useRouter();
+  console.log(data);
   const lgUp = useMediaQuery((theme) => theme.breakpoints.up("lg"), {
     defaultMatches: true,
     noSsr: false,
@@ -108,18 +83,35 @@ export const DashboardSidebar = (props) => {
         }}
       >
         <div>
-          <Box sx={{ p: 3 }}>
-            <NextLink href="/" passHref>
-              <a>
-                <h1>Admin</h1>
-              </a>
-            </NextLink>
-          </Box>
+          <Row style={{ display: "inline-flex", width: "100%" }}>
+            <Col>
+              <Avatar
+                src={"https://raw.githubusercontent.com/thesatyasahoo/My-codes/master/user.png"}
+                sx={{
+                  height: 68,
+                  mb: 1,
+                  mt: 2,
+                  mr: 2,
+                  ml: 3,
+                  width: 68,
+                }}
+              />
+            </Col>
+            <Col>
+              <Typography
+                style={{ color: "white", marginTop: "2.5rem", textTransform: "capitalize" }}
+                gutterBottom
+                variant="h6"
+              >
+                {data ? data.name : "Admin"}
+              </Typography>
+            </Col>
+          </Row>
         </div>
         <Divider
           sx={{
             borderColor: "#2D3748",
-            my: 3,
+            my: 1,
           }}
         />
         <Box sx={{ flexGrow: 1 }}>

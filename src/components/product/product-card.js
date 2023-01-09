@@ -64,16 +64,7 @@ export const ProductCard = ({ ...rest }) => {
       })
       .then((res) => {
         console.log(res);
-        // let adminArr = [];
-        // res.data.roomList.map((e) => {
-        //   adminArr.push({
-        //     ...e,
-        //     createdAt: new Date(e.createdAt),
-        //     duration: new Date(e.duration),
-        //   })
-        // })
         setAdminArray(res.data.productList);
-        // dispatch(RunroomActions.addToAdmin(res.data.productList));
       })
       .catch((err) => {
         console.log(err);
@@ -151,9 +142,6 @@ export const ProductCard = ({ ...rest }) => {
     // Update the formData object
     formData.append("image", event.target.files[0], event.target.files[0].name);
 
-    // Details of the uploaded file
-    // Request made to the backend api
-    // Send formData object
     return await axios
       .put(process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "addProdPic/" + dialogObj._id, formData, {
         headers: {
@@ -391,17 +379,7 @@ export const ProductCard = ({ ...rest }) => {
             <Table>
               <TableHead>
                 <TableRow>
-                  {/* <TableCell padding="checkbox">
-                    <Checkbox
-                      checked={selectedCustomerIds.length === adminArray.length}
-                      color="primary"
-                      indeterminate={
-                        selectedCustomerIds.length > 0 &&
-                        selectedCustomerIds.length < adminArray.length
-                      }
-                      onChange={handleSelectAll}
-                    />
-                  </TableCell> */}
+                  <TableCell>Logo</TableCell>
                   <TableCell>Created At</TableCell>
                   <TableCell>Name</TableCell>
                   <TableCell>Price</TableCell>
@@ -416,14 +394,21 @@ export const ProductCard = ({ ...rest }) => {
                       key={adminArray._id}
                       selected={selectedCustomerIds.indexOf(adminArray._id) !== -1}
                     >
-                      {/* <TableCell padding="checkbox">
-                          <Checkbox
-                            checked={selectedCustomerIds.indexOf(adminArray._id) !== -1}
-                            onChange={(event) => handleSelectOne(event, adminArray._id)}
-                            value="true"
-                          />
-                        </TableCell> */}
-
+                      <TableCell>
+                        <img
+                          alt={"...loading"}
+                          src={
+                            adminArray.image
+                              ? adminArray.image
+                              : "https://raw.githubusercontent.com/thesatyasahoo/My-codes/master/user.png"
+                          }
+                          style={{
+                            height: "3rem",
+                            width: "3rem",
+                            borderRadius: "50%",
+                          }}
+                        />{" "}
+                      </TableCell>
                       <TableCell>
                         {adminArray.createdAt
                           ? new Date(adminArray.createdAt).toLocaleDateString()

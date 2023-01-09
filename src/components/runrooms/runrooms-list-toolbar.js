@@ -1,16 +1,5 @@
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  TextField,
-  InputAdornment,
-  SvgIcon,
-  Typography,
-} from "@mui/material";
-import { Search as SearchIcon } from "../../icons/search";
-// import { Upload as UploadIcon } from '../../icons/upload';
-// import { Download as DownloadIcon } from '../../icons/download';
+import { Box, Button, Typography } from "@mui/material";
+import NextLink from "next/link";
 
 export const RunroomListToolbar = (props) => (
   <Box {...props}>
@@ -26,29 +15,9 @@ export const RunroomListToolbar = (props) => (
       <Typography sx={{ m: 1 }} variant="h5">
         List Of RunRoom
       </Typography>
-      {/* <Box sx={{ minWidth: 500 }}>
-        <TextField
-          fullWidth
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SvgIcon color="action" fontSize="small">
-                  <SearchIcon />
-                </SvgIcon>
-              </InputAdornment>
-            ),
-          }}
-          placeholder="Search Runroom"
-          variant="outlined"
-        />
-      </Box> */}
+      <NextLink href={"/runroom"} passHref>
+        <Button variant="contained">CREATE</Button>
+      </NextLink>
     </Box>
-    {/* <Box sx={{ mt: 3 }}>
-      <Card>
-        <CardContent>
-          
-        </CardContent>
-      </Card>
-    </Box> */}
   </Box>
 );
