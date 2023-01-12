@@ -1,8 +1,5 @@
 import { useState, useEffect } from "react";
 import * as React from "react";
-import PropTypes from "prop-types";
-import { format } from "date-fns";
-import { useAuthContext } from "../../contexts/auth-context";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import {
@@ -34,8 +31,8 @@ export const RunroomCreate = () => {
   let token = useSelector((state) => (state.Profile.itemList ? state.Profile.itemList : []));
   let data = cookies.account;
   const [open, setOpen] = useState({
-    state: false,
-    mesage: "",
+    open: false,
+    message: "Success",
   });
 
   const formik = useFormik({
@@ -44,6 +41,7 @@ export const RunroomCreate = () => {
       type: 0,
       duration: "",
       distance: "",
+      status: "Run Started",
       time_date: new Date(),
       createdBy: "Admin",
       image: "https://raw.githubusercontent.com/thesatyasahoo/My-codes/master/user.png",
@@ -69,8 +67,8 @@ export const RunroomCreate = () => {
             },
           })
           .then((res) => {
-            console.log(res);
-            handleClick("success");
+            setOpen({ open: true, message: "Runroom Created Successfully." });
+            // handleClick("success");
             Router.push("runrooms").catch(console.error);
             // handleClose()
             setTimeout(() => {
@@ -81,6 +79,7 @@ export const RunroomCreate = () => {
             // dispatch(AccountHolderActions.addProfile(res.data));
           })
           .catch((error) => {
+            setOpen({ open: true, message: "Failed To Create Runroom !" });
             helpers.setFieldError("submit", "Please try with valid email & password!");
           });
       } catch (err) {
@@ -97,7 +96,13 @@ export const RunroomCreate = () => {
       message: message,
     });
   };
-
+  useEffect(() => {
+    if (open.open === true) {
+      setTimeout(() => {
+        setOpen({ ...open, open: false });
+      }, 1500);
+    }
+  }, [open]);
   const handleClose = () => {
     setOpen({
       ...open,
@@ -117,7 +122,7 @@ export const RunroomCreate = () => {
       <Snackbar
         anchorOrigin={{ horizontal: "center", vertical: "top" }}
         TransitionComponent={TransitionDown}
-        open={open.state}
+        open={open.open}
         autoHideDuration={2500}
         onClose={handleClose}
       >

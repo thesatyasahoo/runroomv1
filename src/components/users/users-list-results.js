@@ -41,24 +41,19 @@ export const UsersListResults = ({ ...rest }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [openDialog1, setOpenDialog1] = useState(false);
   const [viewDialogObj, setViewDialogObj] = useState({});
+  const [open, setOpen] = useState({
+    open: false,
+    message: "Success",
+  });
   const [update, setUpdate] = useState({
-    createdAt: 0,
-    description: "",
-    front_image: "",
-    image: "",
-    invite_users: [""],
-    member_enroll: "",
-    name: "",
-    payment_type: "",
-    run_setup: "",
-    runroom_id: [],
-    squadType: 1,
-    squad_leaders: [""],
-    squad_runners: [""],
-    timezone: new Date().toISOString(),
+    firstname: "",
+    lastname: "",
+    email: "",
+    gender: "",
+    mobile: "",
+    password: "",
+    image: "https://raw.githubusercontent.com/thesatyasahoo/My-codes/master/user.png",
     updatedAt: new Date().toISOString(),
-    user_id: "",
-    visibility_type: "1",
   });
 
   const { user } = useAuthContext();
@@ -74,7 +69,9 @@ export const UsersListResults = ({ ...rest }) => {
       })
       .then((res) => {
         console.log(res);
-        setAdminArray(res.data.userList);
+        setAdminArray(
+          res.data.userList.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+        );
         // dispatch(RunroomActions.addToAdmin(res.data.roomList));
       })
       .catch((err) => {
@@ -85,18 +82,27 @@ export const UsersListResults = ({ ...rest }) => {
     setOpenDialog1(true);
     setViewDialogObj(el);
   };
+  useEffect(() => {
+    if (open.open === true) {
+      setTimeout(() => {
+        setOpen({ ...open, open: false });
+      }, 1500);
+    }
+  }, [open]);
   const removeEvents = async (el) => {
     // console.log(el);
     await axios
-      .delete(process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "delete-squad/" + el.id, {
+      .delete(process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "deleteUser/" + el._id, {
         headers: {
           authorization: cookies.token,
         },
       })
       .then((res) => {
+        setOpen({ open: true, message: "User Deleted Successfully." });
         getRunRoomCall(cookies.token);
       })
       .catch((err) => {
+        setOpen({ open: true, message: "Failed To Delete User !" });
         console.log(err);
       });
   };
@@ -104,24 +110,34 @@ export const UsersListResults = ({ ...rest }) => {
     dialogClickOpen();
     setDialogObj(el);
     setUpdate({
-      createdAt: el.createdAt ? el.createdAt : new Date().toISOString(),
-      description: el.description ? el.description : "",
-      front_image: el.front_image ? el.front_image : "",
-      image: el.image ? el.image : "",
-      invite_users: el.image ? el.image : [""],
-      member_enroll: el.member_enroll ? el.member_enroll : "",
-      name: el.name ? el.name : "",
-      payment_type: el.payment_type ? el.payment_type : "",
-      run_setup: el.run_setup ? el.run_setup : "",
-      runroom_id: el.runroom_id ? el.runroom_id : [""],
-      squadType: el.squadType ? el.squadType : 1,
-      squad_leaders: el.squad_leaders ? el.squad_leaders : [""],
-      squad_runners: el.squad_runners ? el.squad_runners : [""],
-      timezone: el.timezone ? el.timezone : new Date().toISOString(),
+      firstname: el.firstname ? el.firstname : "",
+      lastname: el.lastname ? el.lastname : "",
+      email: el.email ? el.email : "",
+      gender: el.gender ? el.gender : "",
+      mobile: el.mobile ? el.mobile : "",
+      password: el.password ? el.password : "",
+      image: el.image
+        ? el.image
+        : "https://raw.githubusercontent.com/thesatyasahoo/My-codes/master/user.png",
       updatedAt: new Date().toISOString(),
-      user_id: el.user_id ? el.user_id : "",
-      visibility_type: el.visibility_type ? el.visibility_type : "1",
     });
+  };
+  const handleUpdateUser = async () => {
+    await axios
+      .put(process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "userupdate/" + dialogObj._id, update, {
+        headers: {
+          authorization: cookies.token,
+        },
+      })
+      .then((res) => {
+        setOpenDialog(false);
+        setOpen({ open: true, message: "User Updated Successfully." });
+        getRunRoomCall(cookies.token);
+      })
+      .catch((err) => {
+        setOpen({ open: true, message: "Failed To Update User!" });
+        console.log(err);
+      });
   };
   const dialogClose = () => {
     setOpenDialog(false);
@@ -132,37 +148,6 @@ export const UsersListResults = ({ ...rest }) => {
   const dialogClose1 = () => {
     setOpenDialog1(false);
   };
-  const handleSelectAll = (event) => {
-    let newSelectedCustomerIds;
-
-    if (event.target.checked) {
-      newSelectedCustomerIds = adminArray.map((admin) => admin._id);
-    } else {
-      newSelectedCustomerIds = [];
-    }
-
-    setSelectedCustomerIds(newSelectedCustomerIds);
-  };
-
-  const handleSelectOne = (event, _id) => {
-    const selectedIndex = selectedCustomerIds.indexOf(_id);
-    let newSelectedCustomerIds = [];
-
-    if (selectedIndex === -1) {
-      newSelectedCustomerIds = newSelectedCustomerIds.concat(selectedCustomerIds, _id);
-    } else if (selectedIndex === 0) {
-      newSelectedCustomerIds = newSelectedCustomerIds.concat(selectedCustomerIds.slice(1));
-    } else if (selectedIndex === selectedCustomerIds.length - 1) {
-      newSelectedCustomerIds = newSelectedCustomerIds.concat(selectedCustomerIds.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelectedCustomerIds = newSelectedCustomerIds.concat(
-        selectedCustomerIds.slice(0, selectedIndex),
-        selectedCustomerIds.slice(selectedIndex + 1)
-      );
-    }
-
-    setSelectedCustomerIds(newSelectedCustomerIds);
-  };
 
   const handleLimitChange = (event) => {
     setLimit(event.target.value);
@@ -171,10 +156,56 @@ export const UsersListResults = ({ ...rest }) => {
   const handlePageChange = (event, newPage) => {
     setPage(newPage);
   };
+  const onFileChange = async (event) => {
+    console.log(event.target.files[0]);
+    setLoading(true);
+    let bytes = event.target.files[0].size;
+    if (!+bytes) return "0 Bytes";
 
+    const k = 1024;
+    const dm = 2 < 0 ? 0 : 2;
+    const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    let final_image_size = `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+    if (bytes > 600000) {
+      setLoading(false);
+      return alert(
+        "Image size should not greater then 600 kb, your upload file size is " + final_image_size
+      );
+    }
+    // Create an object of formData
+    const formData = new FormData();
+
+    // Update the formData object
+    formData.append("image", event.target.files[0], event.target.files[0].name);
+
+    // Details of the uploaded file
+    // Request made to the backend api
+    // Send formData object
+    return await axios
+      .post(process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "image_upload/", formData, {
+        headers: {
+          authorization: cookies.token,
+        },
+      })
+      .then((res) => {
+        console.log(res.data[0].path);
+        setUpdate({ ...update, image: res.data[0].path });
+        setLoading(false);
+        setOpen({ open: true, message: "User Updated Successfully." });
+        return;
+      })
+      .catch((err) => {
+        setOpen({ open: true, message: "Failed To Update User!" });
+        console.log(err);
+      });
+  };
   return (
     <>
       <Snackbar
+        anchorOrigin={{ horizontal: "center", vertical: "top" }}
         open={open.open}
         message={open.message}
         onClick={() => setOpen({ ...open, open: false })}
@@ -284,19 +315,39 @@ export const UsersListResults = ({ ...rest }) => {
             <TextField
               style={{ marginBottom: "1rem", marginTop: "1rem" }}
               fullWidth
-              label="Desc"
-              name="ethMnemonic"
-              multiline
-              rows={4}
-              type="text"
-              defaultValue={dialogObj.ethMnemonic}
+              label="Email"
+              name="email"
+              type="email"
+              defaultValue={dialogObj.email}
               // value={update.organizerEmail}
               onChange={(e) => {
-                setUpdate({ ...update, ethMnemonic: e.target.value });
+                setUpdate({ ...update, email: e.target.value });
               }}
               variant="outlined"
             />
           </div>
+          <div>
+            <TextField
+              style={{ marginBottom: "1rem", marginTop: "1rem" }}
+              fullWidth
+              label="Password"
+              name="password"
+              type="password"
+              defaultValue={dialogObj.password}
+              // value={update.organizerEmail}
+              onChange={(e) => {
+                setUpdate({ ...update, password: e.target.value });
+              }}
+              variant="outlined"
+            />
+          </div>
+          <TextField
+            fullWidth
+            id="outlined-required"
+            name="image"
+            type="file"
+            onChange={onFileChange}
+          />
         </DialogContent>
         <DialogActions>
           {loading === true ? (
@@ -308,7 +359,7 @@ export const UsersListResults = ({ ...rest }) => {
               fullWidth
               size="small"
               sx={{ mt: 2 }}
-              onClick={(el) => handleUpdateRoom(update)}
+              onClick={(el) => handleUpdateUser(update)}
               variant="contained"
             >
               Update
@@ -335,7 +386,7 @@ export const UsersListResults = ({ ...rest }) => {
                 <TableCell>Created At</TableCell>
                 <TableCell>Name</TableCell>
                 <TableCell>Mobile</TableCell>
-                <TableCell>Desc</TableCell>
+                {/* <TableCell>Desc</TableCell> */}
                 <TableCell>Action</TableCell>
               </TableRow>
             </TableHead>
@@ -372,11 +423,11 @@ export const UsersListResults = ({ ...rest }) => {
                         : null}
                     </TableCell>
                     <TableCell>{adminArray.mobile ? adminArray.mobile : null}</TableCell>
-                    <TableCell>
+                    {/* <TableCell>
                       {adminArray.ethMnemonic && adminArray.ethMnemonic.length > 20
                         ? adminArray.ethMnemonic.slice(0, 20)
                         : adminArray.ethMnemonic}
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell>
                       <VisibilityRoundedIcon
                         color="info"

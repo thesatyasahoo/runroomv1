@@ -15,9 +15,9 @@ export const SquadListToolbar = (props) => (
       <Typography sx={{ m: 1 }} variant="h5">
         List Of Squad
       </Typography>
-      {/* <NextLink href={"/squadCreate"} passHref>
+      <NextLink href={"/squadCreate"} passHref>
         <Button variant="contained">CREATE</Button>
-      </NextLink> */}
+      </NextLink>
     </Box>
   </Box>
 );

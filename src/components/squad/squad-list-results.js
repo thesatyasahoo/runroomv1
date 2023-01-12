@@ -1,11 +1,8 @@
 import { useState, useEffect } from "react";
-import PerfectScrollbar from "react-perfect-scrollbar";
 import { useAuthContext } from "../../contexts/auth-context";
 import {
   Button,
-  Box,
   Card,
-  Checkbox,
   Table,
   TableBody,
   TableCell,
@@ -42,23 +39,17 @@ export const SquadListResults = ({ ...rest }) => {
   const [openDialog1, setOpenDialog1] = useState(false);
   const [viewDialogObj, setViewDialogObj] = useState({});
   const [update, setUpdate] = useState({
-    createdAt: 0,
-    description: "",
-    front_image: "",
-    image: "",
-    invite_users: [""],
-    member_enroll: "",
     name: "",
+    image: "",
+    front_image: "",
+    description: "",
+    updatedAt: new Date().toISOString(),
     payment_type: "",
     run_setup: "",
-    runroom_id: [],
-    squadType: 1,
-    squad_leaders: [""],
-    squad_runners: [""],
-    timezone: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    user_id: "",
-    visibility_type: "1",
+  });
+  const [open, setOpen] = useState({
+    open: false,
+    message: "Success",
   });
 
   const { user } = useAuthContext();
@@ -74,7 +65,9 @@ export const SquadListResults = ({ ...rest }) => {
       })
       .then((res) => {
         console.log(res);
-        // let adminArr = [];
+        let adminArr = res.data.squadList.sort(
+          (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+        );
         // res.data.roomList.map((e) => {
         //   adminArr.push({
         //     ...e,
@@ -82,7 +75,7 @@ export const SquadListResults = ({ ...rest }) => {
         //     duration: new Date(e.duration),
         //   })
         // })
-        setAdminArray(res.data.squadList);
+        setAdminArray(adminArr);
         // dispatch(RunroomActions.addToAdmin(res.data.squadList));
       })
       .catch((err) => {
@@ -90,6 +83,7 @@ export const SquadListResults = ({ ...rest }) => {
       });
   };
   const handleView = (el) => {
+    console.log(el);
     setOpenDialog1(true);
     setViewDialogObj(el);
   };
@@ -102,34 +96,50 @@ export const SquadListResults = ({ ...rest }) => {
         },
       })
       .then((res) => {
+        setOpen({ open: true, message: "Squad Deleted Successfully." });
         getRunRoomCall(cookies.token);
       })
       .catch((err) => {
+        setOpen({ open: true, message: "Failed To Delete Squad!" });
         console.log(err);
       });
   };
-  const handleUpdate = (el) => {
+  const handleUpdate = async (el) => {
+    console.log(el);
     dialogClickOpen();
     setDialogObj(el);
     setUpdate({
-      createdAt: el.createdAt ? el.createdAt : new Date().toISOString(),
-      description: el.description ? el.description : "",
-      front_image: el.front_image ? el.front_image : "",
-      image: el.image ? el.image : "",
-      invite_users: el.image ? el.image : [""],
-      member_enroll: el.member_enroll ? el.member_enroll : "",
+      ...update,
       name: el.name ? el.name : "",
+      image: el.image
+        ? el.image
+        : "https://raw.githubusercontent.com/thesatyasahoo/My-codes/master/user.png",
+      front_image: el.front_image
+        ? el.front_image
+        : "https://raw.githubusercontent.com/thesatyasahoo/My-codes/master/user.png",
+      description: el.description ? el.description : "",
+      updatedAt: el.updatedAt ? el.updatedAt : new Date().toISOString(),
       payment_type: el.payment_type ? el.payment_type : "",
       run_setup: el.run_setup ? el.run_setup : "",
-      runroom_id: el.runroom_id ? el.runroom_id : [""],
-      squadType: el.squadType ? el.squadType : 1,
-      squad_leaders: el.squad_leaders ? el.squad_leaders : [""],
-      squad_runners: el.squad_runners ? el.squad_runners : [""],
-      timezone: el.timezone ? el.timezone : new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      user_id: el.user_id ? el.user_id : "",
-      visibility_type: el.visibility_type ? el.visibility_type : "1",
     });
+  };
+  const handleUpdateSquad = async () => {
+    console.log(viewDialogObj);
+    await axios
+      .put(process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "updateSquad/" + dialogObj._id, update, {
+        headers: {
+          authorization: cookies.token,
+        },
+      })
+      .then((res) => {
+        setOpenDialog(false);
+        setOpen({ open: true, message: "Squad Updated Successfully." });
+        getRunRoomCall(cookies.token);
+      })
+      .catch((err) => {
+        setOpen({ open: true, message: "Failed To Update!" });
+        console.log(err);
+      });
   };
   const dialogClose = () => {
     setOpenDialog(false);
@@ -139,37 +149,6 @@ export const SquadListResults = ({ ...rest }) => {
   };
   const dialogClose1 = () => {
     setOpenDialog1(false);
-  };
-  const handleSelectAll = (event) => {
-    let newSelectedCustomerIds;
-
-    if (event.target.checked) {
-      newSelectedCustomerIds = adminArray.map((admin) => admin._id);
-    } else {
-      newSelectedCustomerIds = [];
-    }
-
-    setSelectedCustomerIds(newSelectedCustomerIds);
-  };
-
-  const handleSelectOne = (event, _id) => {
-    const selectedIndex = selectedCustomerIds.indexOf(_id);
-    let newSelectedCustomerIds = [];
-
-    if (selectedIndex === -1) {
-      newSelectedCustomerIds = newSelectedCustomerIds.concat(selectedCustomerIds, _id);
-    } else if (selectedIndex === 0) {
-      newSelectedCustomerIds = newSelectedCustomerIds.concat(selectedCustomerIds.slice(1));
-    } else if (selectedIndex === selectedCustomerIds.length - 1) {
-      newSelectedCustomerIds = newSelectedCustomerIds.concat(selectedCustomerIds.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelectedCustomerIds = newSelectedCustomerIds.concat(
-        selectedCustomerIds.slice(0, selectedIndex),
-        selectedCustomerIds.slice(selectedIndex + 1)
-      );
-    }
-
-    setSelectedCustomerIds(newSelectedCustomerIds);
   };
 
   const handleLimitChange = (event) => {
@@ -183,6 +162,7 @@ export const SquadListResults = ({ ...rest }) => {
   return (
     <>
       <Snackbar
+        anchorOrigin={{ horizontal: "center", vertical: "top" }}
         open={open.open}
         message={open.message}
         onClick={() => setOpen({ ...open, open: false })}
@@ -300,13 +280,46 @@ export const SquadListResults = ({ ...rest }) => {
               )
             ) : null} */}
           </div>
-          {/* <div>
+
+          <div>
+            <TextField
+              style={{ marginBottom: "1rem", marginTop: "1rem" }}
+              fullWidth
+              label="Payment Type"
+              name="mobileNo"
+              type="text"
+              defaultValue={dialogObj.payment_type}
+              // value={update.mobileNo}
+              onChange={(e) => {
+                setUpdate({ ...update, payment_type: e.target.value });
+              }}
+              variant="outlined"
+            />
+          </div>
+          <div>
+            <TextField
+              style={{ marginBottom: "1rem", marginTop: "1rem" }}
+              fullWidth
+              label="Run Setup"
+              name="run_setup"
+              type="text"
+              defaultValue={dialogObj.run_setup}
+              // value={update.mobileNo}
+              onChange={(e) => {
+                setUpdate({ ...update, run_setup: e.target.value });
+              }}
+              variant="outlined"
+            />
+          </div>
+          <div>
             <TextField
               style={{ marginBottom: "1rem", marginTop: "1rem" }}
               fullWidth
               label="Description"
               name="description"
               type="text"
+              multiline
+              rows={3}
               defaultValue={dialogObj.description}
               // value={update.description}
               onChange={(e) => {
@@ -314,23 +327,7 @@ export const SquadListResults = ({ ...rest }) => {
               }}
               variant="outlined"
             />
-          </div> */}
-          {/* <div>
-            <TextField
-              style={{ marginBottom: "1rem", marginTop: "1rem" }}
-              fullWidth
-              label="Mobile No"
-              name="mobileNo"
-              type="text"
-              defaultValue={dialogObj.mobileNo}
-              // value={update.mobileNo}
-              onChange={(e) => {
-                setUpdate({ ...update, mobileNo: e.target.value });
-              }}
-              variant="outlined"
-            />
-          </div> */}
-
+          </div>
           {/* <div>
             <Form.Group controlId="formFile" className="mb-3">
               <Form.Control type="file" onChange={(e) => onFileChange(e)} />
@@ -347,7 +344,7 @@ export const SquadListResults = ({ ...rest }) => {
               fullWidth
               size="small"
               sx={{ mt: 2 }}
-              onClick={(el) => handleUpdateRoom(update)}
+              onClick={(el) => handleUpdateSquad(update)}
               variant="contained"
             >
               Update

@@ -41,16 +41,18 @@ export const ProductCard = ({ ...rest }) => {
   const [openDialog1, setOpenDialog1] = useState(false);
   const [viewDialogObj, setViewDialogObj] = useState({});
   const [update, setUpdate] = useState({
-    _id: "",
     prod_name: "",
     prod_category: "",
     price: "",
-    added_by: "",
-    prod_description: [""],
-    image: "",
+    added_by: "Admin",
+    prod_description: "",
+    image: "https://raw.githubusercontent.com/thesatyasahoo/My-codes/master/user.png",
     prod_size: "",
   });
-
+  const [open, setOpen] = useState({
+    open: false,
+    message: "Success",
+  });
   const { user } = useAuthContext();
   useEffect(() => {
     getRunRoomCall(cookies.token);
@@ -64,6 +66,9 @@ export const ProductCard = ({ ...rest }) => {
       })
       .then((res) => {
         console.log(res);
+        let adminArray = res.data.productList.sort(
+          (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+        );
         setAdminArray(res.data.productList);
       })
       .catch((err) => {
@@ -83,16 +88,28 @@ export const ProductCard = ({ ...rest }) => {
         },
       })
       .then((res) => {
+        setOpen({ open: true, message: "Product Deleted Successfully." });
         getRunRoomCall(cookies.token);
         setLoading(false);
       })
       .catch((err) => {
+        setOpen({ open: true, message: "Failed To Delete Product !" });
         console.log(err);
         setLoading(false);
       });
   };
   const handleUpdate = async (el) => {
-    setUpdate({ ...update, _id: el._id });
+    setUpdate({
+      prod_name: el.prod_name ? el.prod_name : "",
+      prod_category: el.prod_category ? el.prod_category : "",
+      price: el.price ? el.price : "",
+      added_by: "Admin",
+      prod_description: el.prod_description ? el.prod_description : "",
+      image: el.image
+        ? el.image
+        : "https://raw.githubusercontent.com/thesatyasahoo/My-codes/master/user.png",
+      prod_size: el.prod_size ? el.prod_size : "",
+    });
     console.log(el);
     dialogClickOpen();
     setDialogObj(el);
@@ -101,17 +118,19 @@ export const ProductCard = ({ ...rest }) => {
     console.log(el);
     console.log(update);
     await axios
-      .put(process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "editProduct/" + el._id, el, {
+      .put(process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "editProduct/" + dialogObj._id, el, {
         headers: {
           authorization: cookies.token,
         },
       })
       .then((res) => {
+        setOpen({ open: true, message: "Product Uploaded Successfully." });
         getRunRoomCall(cookies.token);
         setDialogObj({});
         dialogClose();
       })
       .catch((err) => {
+        setOpen({ open: true, message: "Failed To Update Product !" });
         console.log(err);
       });
   };
@@ -176,10 +195,16 @@ export const ProductCard = ({ ...rest }) => {
   };
   useEffect(() => {
     getRunRoomCall(cookies.token);
-  }, []);
+    if (open.open === true) {
+      setTimeout(() => {
+        setOpen({ ...open, open: false });
+      }, 1500);
+    }
+  }, [open]);
   return (
     <>
       <Snackbar
+        anchorOrigin={{ horizontal: "center", vertical: "top" }}
         open={open.open}
         message={open.message}
         onClick={() => setOpen({ ...open, open: false })}

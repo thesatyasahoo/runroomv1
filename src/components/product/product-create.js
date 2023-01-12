@@ -36,7 +36,14 @@ export const ProductCreate = () => {
   });
 
   // console.log(data);
-  useEffect(() => {}, []);
+  useEffect(() => {
+    getRunRoomCall(cookies.token);
+    if (open.open === true) {
+      setTimeout(() => {
+        setOpen({ ...open, open: false });
+      }, 1500);
+    }
+  }, [open]);
   const formik = useFormik({
     initialValues: {
       prod_name: "",

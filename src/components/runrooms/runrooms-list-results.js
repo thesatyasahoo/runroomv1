@@ -44,16 +44,28 @@ export const RunroomListResults = ({ ...rest }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [openDialog1, setOpenDialog1] = useState(false);
   const [viewDialogObj, setViewDialogObj] = useState({});
+  const [open, setOpen] = useState({
+    open: false,
+    message: "Success",
+  });
   const [update, setUpdate] = useState({
     type: "",
     distance: "",
+    duration: "",
+    image: "",
+    status: "",
     time_date: "",
   });
 
   const { user } = useAuthContext();
   useEffect(() => {
     getRunRoomCall(cookies.token);
-  }, []);
+    if (open.open === true) {
+      setTimeout(() => {
+        setOpen({ ...open, open: false });
+      }, 1500);
+    }
+  }, [cookies, open]);
   const getRunRoomCall = async (token) => {
     // setLoading(true);
     await axios
@@ -64,6 +76,8 @@ export const RunroomListResults = ({ ...rest }) => {
       })
       .then((res) => {
         console.log(res);
+        let tempArray = res.data.roomList.sort((a, b) => b.timestamp - a.timestamp);
+
         // let adminArr = [];
         // res.data.roomList.map((e) => {
         //   adminArr.push({
@@ -72,7 +86,7 @@ export const RunroomListResults = ({ ...rest }) => {
         //     duration: new Date(e.duration),
         //   })
         // })
-        setAdminArray(res.data.roomList);
+        setAdminArray(tempArray);
         // setLoading(false);
         // dispatch(RunroomActions.addToAdmin(res.data.roomList));
       })
@@ -85,17 +99,18 @@ export const RunroomListResults = ({ ...rest }) => {
     setViewDialogObj(el);
   };
   const removeEvents = async (el) => {
-    // console.log(el);
     await axios
-      .delete(process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "delete-squad/" + el.id, {
+      .delete(process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "deleteRunroom/" + el._id, {
         headers: {
           authorization: cookies.token,
         },
       })
       .then((res) => {
+        setOpen({ open: true, message: "Runroom Deleted Successfully." });
         getRunRoomCall(cookies.token);
       })
       .catch((err) => {
+        setOpen({ open: true, message: "Failed To Delete Runroom !" });
         console.log(err);
       });
   };
@@ -105,10 +120,10 @@ export const RunroomListResults = ({ ...rest }) => {
     setUpdate({
       type: el.type ? el.type : "",
       distance: el.distance ? el.distance : "",
-      // duration: el.duration ? el.duration : "",
+      duration: el.duration ? el.duration : "",
       time_date: el.time_date ? el.time_date : new Date().toISOString(),
-      // createdBy: "Admin",
-      // image: "https://raw.githubusercontent.com/thesatyasahoo/My-codes/master/user.png",
+      status: el.status ? el.status : "",
+      image: "https://raw.githubusercontent.com/thesatyasahoo/My-codes/master/user.png",
     });
   };
   const dialogClose = () => {
@@ -158,15 +173,11 @@ export const RunroomListResults = ({ ...rest }) => {
     // Request made to the backend api
     // Send formData object
     return await axios
-      .put(
-        process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "upload_runroom_pic/" + dialogObj._id,
-        formData,
-        {
-          headers: {
-            authorization: cookies.token,
-          },
-        }
-      )
+      .put(process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "image_upload/" + dialogObj._id, formData, {
+        headers: {
+          authorization: cookies.token,
+        },
+      })
       .then((res) => {
         // console.log(res.data.path);
         setUpdate({ ...update, image: res.data.path });
@@ -185,11 +196,14 @@ export const RunroomListResults = ({ ...rest }) => {
         },
       })
       .then((res) => {
+        setOpen({ open: true, message: "Runroom Updated Successfully." });
         getRunRoomCall(cookies.token);
         setUpdate({
           type: "",
           distance: "",
           duration: "",
+          image: "",
+          status: "",
           time_date: [""],
         });
         setDialogObj({});
@@ -197,12 +211,13 @@ export const RunroomListResults = ({ ...rest }) => {
       })
       .catch((err) => {
         console.log(err);
+        setOpen({ ope9n: true, message: "Failed To Update Runroom !" });
       });
   };
-
   return (
     <>
       <Snackbar
+        anchorOrigin={{ horizontal: "center", vertical: "top" }}
         open={open.open}
         message={open.message}
         onClick={() => setOpen({ ...open, open: false })}
@@ -286,7 +301,7 @@ export const RunroomListResults = ({ ...rest }) => {
               defaultValue={dialogObj.distance}
               // value={update.location}
               onChange={(e) => {
-                setUpdate({ ...update, distance: e.target.value });
+                setUpdate({ ...update, distance: `${e.target.value} miles` });
               }}
               variant="outlined"
             />
@@ -295,17 +310,27 @@ export const RunroomListResults = ({ ...rest }) => {
             <TextField
               style={{ marginBottom: "1rem", marginTop: "1rem" }}
               fullWidth
-              label="Duration"
               name="duration"
               type="date"
-              defaultValue={
-                dialogObj.duration
-                  ? new Date(dialogObj.duration).toISOString().slice(0, 10)
-                  : new Date()
-              }
+              defaultValue={dialogObj.duration}
               // value={update.organizerEmail}
               onChange={(e) => {
-                setUpdate({ ...update, duration: new Date(e.target.value).toISOString() });
+                setUpdate({ ...update, duration: e.target.value });
+              }}
+              variant="outlined"
+            />
+          </div>
+          <div>
+            <TextField
+              style={{ marginBottom: "1rem", marginTop: "1rem" }}
+              fullWidth
+              label="Status"
+              name="status"
+              type="text"
+              defaultValue={dialogObj.status}
+              // value={update.organizerEmail}
+              onChange={(e) => {
+                setUpdate({ ...update, status: e.target.value });
               }}
               variant="outlined"
             />

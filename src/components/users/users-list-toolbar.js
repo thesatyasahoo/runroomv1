@@ -1,5 +1,5 @@
 import { Box, Button, Typography } from "@mui/material";
-import Link from "@mui/material/Link";
+import NextLink from "next/link";
 
 export const UsersListToolbar = (props) => (
   <Box {...props}>
@@ -15,9 +15,9 @@ export const UsersListToolbar = (props) => (
       <Typography sx={{ m: 1 }} variant="h5">
         List Of Users
       </Typography>
-      <Link href="#" underline="none">
+      <NextLink href={"/userCreate"} passHref>
         <Button variant="contained">CREATE</Button>
-      </Link>
+      </NextLink>
     </Box>
     {/* <Box sx={{ mt: 3 }}>
       <Card>
