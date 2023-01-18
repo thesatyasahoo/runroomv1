@@ -37,7 +37,6 @@ export const ProductCreate = () => {
 
   // console.log(data);
   useEffect(() => {
-    getRunRoomCall(cookies.token);
     if (open.open === true) {
       setTimeout(() => {
         setOpen({ ...open, open: false });

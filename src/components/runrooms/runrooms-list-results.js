@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import PerfectScrollbar from "react-perfect-scrollbar";
 import { useAuthContext } from "../../contexts/auth-context";
 import {
   Button,

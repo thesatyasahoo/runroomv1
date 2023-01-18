@@ -27,6 +27,8 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useCookies } from "react-cookie";
 import CircularProgress from "@mui/material/CircularProgress";
+import Paper from "@mui/material/Paper";
+import TableContainer from "@mui/material/TableContainer";
 
 export const ProductCard = ({ ...rest }) => {
   const [loading, setLoading] = useState(false);
@@ -399,82 +401,80 @@ export const ProductCard = ({ ...rest }) => {
         </DialogActions>
       </Dialog>
       <Card {...rest}>
-        <PerfectScrollbar>
-          <Box sx={{ minWidth: 1050 }}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Logo</TableCell>
-                  <TableCell>Created At</TableCell>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Price</TableCell>
-                  <TableCell>Action</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {adminArray.length > 0 && loading === false ? (
-                  adminArray.map((adminArray) => (
-                    <TableRow
-                      hover
-                      key={adminArray._id}
-                      selected={selectedCustomerIds.indexOf(adminArray._id) !== -1}
-                    >
-                      <TableCell>
-                        <img
-                          alt={"...loading"}
-                          src={
-                            adminArray.image
-                              ? adminArray.image
-                              : "https://raw.githubusercontent.com/thesatyasahoo/My-codes/master/user.png"
-                          }
-                          style={{
-                            height: "3rem",
-                            width: "3rem",
-                            borderRadius: "50%",
-                          }}
-                        />{" "}
-                      </TableCell>
-                      <TableCell>
-                        {adminArray.createdAt
-                          ? new Date(adminArray.createdAt).toLocaleDateString()
-                          : null}
-                      </TableCell>
-                      <TableCell>{adminArray.prod_name ? adminArray.prod_name : null}</TableCell>
-                      <TableCell>{adminArray.price ? adminArray.price : null}</TableCell>
-                      <TableCell>
-                        <VisibilityRoundedIcon
-                          color="info"
-                          onClick={() => handleView(adminArray)}
-                          style={{ marginRight: "0.3rem", cursor: "pointer" }}
-                        />
-                        <SaveAsRoundedIcon
-                          color="success"
-                          onClick={() => handleUpdate(adminArray)}
-                          style={{ marginRight: "0.3rem", cursor: "pointer" }}
-                        />
-                        <DeleteForeverIcon
-                          color="success"
-                          onClick={() => removeEvents(adminArray)}
-                          style={{ cursor: "pointer", color: "red" }}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
+        <TableContainer component={Paper} sx={{ minWidth: "100%" }}>
+          <Table sx={{ minWidth: "100%" }}>
+            <TableHead>
+              <TableRow>
+                <TableCell>Logo</TableCell>
+                <TableCell>Created At</TableCell>
+                <TableCell>Name</TableCell>
+                <TableCell>Price</TableCell>
+                <TableCell>Action</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {adminArray.length > 0 && loading === false ? (
+                adminArray.map((adminArray) => (
                   <TableRow
                     hover
                     key={adminArray._id}
                     selected={selectedCustomerIds.indexOf(adminArray._id) !== -1}
                   >
-                    <TableCell colSpan={5} style={{ textAlign: "center", paddingTop: "2rem" }}>
-                      <CircularProgress color="primary" size={80} style={{ marginLeft: "2rem" }} />
+                    <TableCell>
+                      <img
+                        alt={"...loading"}
+                        src={
+                          adminArray.image
+                            ? adminArray.image
+                            : "https://raw.githubusercontent.com/thesatyasahoo/My-codes/master/user.png"
+                        }
+                        style={{
+                          height: "3rem",
+                          width: "3rem",
+                          borderRadius: "50%",
+                        }}
+                      />{" "}
+                    </TableCell>
+                    <TableCell>
+                      {adminArray.createdAt
+                        ? new Date(adminArray.createdAt).toLocaleDateString()
+                        : null}
+                    </TableCell>
+                    <TableCell>{adminArray.prod_name ? adminArray.prod_name : null}</TableCell>
+                    <TableCell>{adminArray.price ? adminArray.price : null}</TableCell>
+                    <TableCell>
+                      <VisibilityRoundedIcon
+                        color="info"
+                        onClick={() => handleView(adminArray)}
+                        style={{ marginRight: "0.3rem", cursor: "pointer" }}
+                      />
+                      <SaveAsRoundedIcon
+                        color="success"
+                        onClick={() => handleUpdate(adminArray)}
+                        style={{ marginRight: "0.3rem", cursor: "pointer" }}
+                      />
+                      <DeleteForeverIcon
+                        color="success"
+                        onClick={() => removeEvents(adminArray)}
+                        style={{ cursor: "pointer", color: "red" }}
+                      />
                     </TableCell>
                   </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </Box>
-        </PerfectScrollbar>
+                ))
+              ) : (
+                <TableRow
+                  hover
+                  key={adminArray._id}
+                  selected={selectedCustomerIds.indexOf(adminArray._id) !== -1}
+                >
+                  <TableCell colSpan={5} style={{ textAlign: "center", paddingTop: "2rem" }}>
+                    <CircularProgress color="primary" size={80} style={{ marginLeft: "2rem" }} />
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
         <TablePagination
           component="div"
           count={adminArray.length}

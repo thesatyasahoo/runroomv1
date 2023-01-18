@@ -2,7 +2,16 @@ import { useState, useEffect } from "react";
 import * as React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Button, Box, Card, TextField } from "@mui/material";
+import {
+  Button,
+  Box,
+  Card,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { useCookies } from "react-cookie";
@@ -15,6 +24,7 @@ export const UserCreate = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [compType, setCompType] = useState("0");
+  const [gender, setGender] = useState("0");
   const [cookies, setCookie, removeCookie] = useCookies(["token"]);
   let token = useSelector((state) => (state.Profile.itemList ? state.Profile.itemList : []));
   let data = cookies.account;
@@ -30,9 +40,9 @@ export const UserCreate = () => {
       email: "",
       image: "https://raw.githubusercontent.com/thesatyasahoo/My-codes/master/user.png",
       mobile: "",
-      password: "",
+      // password: "",
       phone_code: "",
-      gender: "",
+      gender: gender,
       creted_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     },
@@ -42,7 +52,7 @@ export const UserCreate = () => {
       email: Yup.string().email().required("Email is required."),
       image: Yup.string().required("Image is required."),
       mobile: Yup.string().required("Mobile is required."),
-      password: Yup.string().min(5).max(15).required("Password is required."),
+      // password: Yup.string().min(5).max(15).required("Password is required."),
       gender: Yup.string().required("Gender is required."),
     }),
     onSubmit: async (values, helpers) => {
@@ -134,6 +144,10 @@ export const UserCreate = () => {
         console.log(err);
       });
   };
+  const handleChangeGender = (e) => {
+    setGender(e);
+    formik.setFieldValue("gender", e);
+  };
   return (
     <>
       <Snackbar
@@ -197,7 +211,26 @@ export const UserCreate = () => {
               type="email"
               value={formik.values.email}
             />
-            <TextField
+            <FormControl style={{ width: "31ch", marginTop: 16 }} required error={gender === 0}>
+              <InputLabel id="demo-simple-select-label">Gender</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                label="Gender"
+                value={gender}
+                type="text"
+                onChange={(e) => handleChangeGender(e.target.value)}
+              >
+                <MenuItem value={"0"} selected>
+                  Select
+                </MenuItem>
+                <MenuItem value={"male"}>Male</MenuItem>
+                <MenuItem value={"female"}>Female</MenuItem>
+                <MenuItem value={"others"}>Others</MenuItem>
+              </Select>
+              {gender === 0 ? <FormHelperText>Error</FormHelperText> : ""}
+            </FormControl>
+            {/* <TextField
               fullWidth
               required
               id="outlined-required"
@@ -209,7 +242,7 @@ export const UserCreate = () => {
               name="gender"
               type="text"
               value={formik.values.gender}
-            />
+            /> */}
             <TextField
               fullWidth
               required
@@ -223,7 +256,7 @@ export const UserCreate = () => {
               type="text"
               value={formik.values.mobile}
             />
-            <TextField
+            {/* <TextField
               fullWidth
               required
               id="outlined-required"
@@ -235,7 +268,7 @@ export const UserCreate = () => {
               name="password"
               type="password"
               value={formik.values.password}
-            />
+            /> */}
             <TextField
               fullWidth
               id="outlined-required"
@@ -255,7 +288,6 @@ export const UserCreate = () => {
                 !formik.values.email ||
                 !formik.values.image ||
                 !formik.values.mobile ||
-                !formik.values.password ||
                 !formik.values.gender
               }
               variant="contained"

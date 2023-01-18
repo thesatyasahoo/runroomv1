@@ -26,6 +26,7 @@ import Router from "next/router";
 export const RunroomCreate = () => {
   const dispatch = useDispatch();
   const [type, setType] = useState(0);
+  const [unit, setUnit] = useState(0);
   const [compType, setCompType] = useState("0");
   const [cookies, setCookie, removeCookie] = useCookies(["token"]);
   let token = useSelector((state) => (state.Profile.itemList ? state.Profile.itemList : []));
@@ -54,10 +55,10 @@ export const RunroomCreate = () => {
     onSubmit: async (values, helpers) => {
       console.log(values);
       if (!values.distance) {
-        values.distance = "0";
+        values.distance = `0 ${unit}`;
       }
       if (!values.duration) {
-        values.duration = "0";
+        values.duration = `0 ${unit}`;
       }
       try {
         await axios
@@ -182,13 +183,31 @@ export const RunroomCreate = () => {
                   helperText={formik.touched.distance && formik.errors.distance}
                   onBlur={formik.handleBlur}
                   onChange={formik.handleChange}
-                  onKeyUp={() => formik.setFieldValue("duration", "0")}
+                  onKeyUp={() => formik.setFieldValue("duration", `0 ${unit}`)}
                   name="distance"
                   type="number"
                   value={formik.values.distance}
                 />
+                <FormControl style={{ width: "8rem", marginTop: 16 }} required error={unit === 0}>
+                  <InputLabel id="demo-simple-select-label">Unit</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    label="Unit"
+                    value={unit}
+                    type="number"
+                    onChange={(e) => setUnit(e.target.value)}
+                  >
+                    <MenuItem value={0} selected>
+                      Select
+                    </MenuItem>
+                    <MenuItem value={1}>Kms</MenuItem>
+                    <MenuItem value={2}>Miles</MenuItem>
+                  </Select>
+                  {unit === 0 ? <FormHelperText>Error</FormHelperText> : ""}
+                </FormControl>
                 <Button
-                  style={{ marginTop: 21 }}
+                  style={{ marginTop: 21, marginLeft: "1rem" }}
                   onClick={() => formik.handleSubmit()}
                   disabled={
                     !formik.values.distance || !formik.values.user_id || !formik.values.type
@@ -198,6 +217,7 @@ export const RunroomCreate = () => {
                 >
                   Submit
                 </Button>
+
                 <Button
                   style={{ marginLeft: 21, marginTop: 21 }}
                   onClick={() => Router.push("runrooms").catch(console.error)}
