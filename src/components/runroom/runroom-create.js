@@ -26,7 +26,7 @@ import Router from "next/router";
 export const RunroomCreate = () => {
   const dispatch = useDispatch();
   const [type, setType] = useState(0);
-  const [unit, setUnit] = useState(0);
+  const [unit, setUnit] = useState("");
   const [compType, setCompType] = useState("0");
   const [cookies, setCookie, removeCookie] = useCookies(["token"]);
   let token = useSelector((state) => (state.Profile.itemList ? state.Profile.itemList : []));
@@ -53,13 +53,12 @@ export const RunroomCreate = () => {
       distance: Yup.number().required("Distance is required. eg. 987"),
     }),
     onSubmit: async (values, helpers) => {
+      values = {
+        ...values,
+        distance: values.distance ? `${values.distance} ${unit}` : `0 ${unit}`,
+        duration: values.duration ? `${values.duration} hours` : `0 hours`,
+      };
       console.log(values);
-      if (!values.distance) {
-        values.distance = `0 ${unit}`;
-      }
-      if (!values.duration) {
-        values.duration = `0 ${unit}`;
-      }
       try {
         await axios
           .post(process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "createRunroom", values, {
@@ -183,28 +182,29 @@ export const RunroomCreate = () => {
                   helperText={formik.touched.distance && formik.errors.distance}
                   onBlur={formik.handleBlur}
                   onChange={formik.handleChange}
-                  onKeyUp={() => formik.setFieldValue("duration", `0 ${unit}`)}
                   name="distance"
                   type="number"
                   value={formik.values.distance}
                 />
-                <FormControl style={{ width: "8rem", marginTop: 16 }} required error={unit === 0}>
+                <FormControl style={{ width: "8rem", marginTop: 16 }} required error={unit === ""}>
                   <InputLabel id="demo-simple-select-label">Unit</InputLabel>
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     label="Unit"
                     value={unit}
-                    type="number"
-                    onChange={(e) => setUnit(e.target.value)}
+                    type="text"
+                    onChange={(e) => {
+                      setUnit(e.target.value);
+                    }}
                   >
-                    <MenuItem value={0} selected>
+                    <MenuItem value={""} selected>
                       Select
                     </MenuItem>
-                    <MenuItem value={1}>Kms</MenuItem>
-                    <MenuItem value={2}>Miles</MenuItem>
+                    <MenuItem value={"kms"}>Kms</MenuItem>
+                    <MenuItem value={"miles"}>Miles</MenuItem>
                   </Select>
-                  {unit === 0 ? <FormHelperText>Error</FormHelperText> : ""}
+                  {unit === "" ? <FormHelperText>Error</FormHelperText> : ""}
                 </FormControl>
                 <Button
                   style={{ marginTop: 21, marginLeft: "1rem" }}
@@ -283,7 +283,6 @@ export const RunroomCreate = () => {
                   helperText={formik.touched.duration && formik.errors.duration}
                   onBlur={formik.handleBlur}
                   onChange={formik.handleChange}
-                  onKeyUp={() => formik.setFieldValue("distance", "0")}
                   name="duration"
                   type="text"
                   value={formik.values.duration}
