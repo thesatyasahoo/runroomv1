@@ -43,54 +43,51 @@ export const RunroomCreate = () => {
       duration: "",
       distance: "",
       status: "Run Started",
+      runStartTime: "",
+      runFinishTime: "",
       time_date: new Date(),
       createdBy: "Admin",
       image: "https://raw.githubusercontent.com/thesatyasahoo/My-codes/master/user.png",
     },
     validationSchema: Yup.object({
       type: Yup.number().required("Type is required"),
-      duration: Yup.number().required("Duration is required. eg. 456"),
-      distance: Yup.number().required("Distance is required. eg. 987"),
+      duration: Yup.string().required("Duration is required."),
+      distance: Yup.string().required("Distance is required. "),
+      runStartTime: Yup.string().required("Start Time is required."),
+      runFinishTime: Yup.string().required("Finish Time is required."),
     }),
     onSubmit: async (values, helpers) => {
       values = {
         ...values,
         distance: values.distance ? `${values.distance} ${unit}` : `0 ${unit}`,
-        duration: values.duration ? `${values.duration} hours` : `0 hours`,
+        duration: values.duration ? values.duration : 0,
       };
-      console.log(values);
-      try {
-        await axios
-          .post(process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "createRunroom", values, {
-            headers: {
-              authorization: cookies.token ? cookies.token : "",
-            },
-          })
-          .then((res) => {
-            setOpen({ open: true, message: "Runroom Created Successfully." });
-            // handleClick("success");
-            Router.push("runrooms").catch(console.error);
-            // handleClose()
-            setTimeout(() => {
-              formik.setValues(formik.initialValues);
-            }, 1000);
+      await axios
+        .post(process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "createRunroom", values, {
+          headers: {
+            authorization: cookies.token ? cookies.token : "",
+          },
+        })
+        .then((res) => {
+          setOpen({ open: true, message: "Runroom Created Successfully." });
+          // handleClick("success");
+          Router.push("runrooms").catch(console.error);
+          // handleClose()
+          setTimeout(() => {
+            formik.setValues(formik.initialValues);
+          }, 1000);
 
-            // helpers.setSubmitting(true);
-            // dispatch(AccountHolderActions.addProfile(res.data));
-          })
-          .catch((error) => {
-            setOpen({ open: true, message: "Failed To Create Runroom !" });
-            helpers.setFieldError("submit", "Please try with valid email & password!");
-          });
-      } catch (err) {
-        console.error(err.message);
-        helpers.setFieldError("submit", err.message || "Something went wrong");
-        helpers.setSubmitting(false);
-      }
+          // helpers.setSubmitting(true);
+          // dispatch(AccountHolderActions.addProfile(res.data));
+        })
+        .catch((error) => {
+          setOpen({ open: true, message: "Failed To Create Runroom !" });
+          helpers.setFieldError("submit", "Please try with valid email & password!");
+        });
     },
   });
   const handleClick = (message) => {
-    console.log("open");
+    // console.log("open");
     setOpen({
       state: true,
       message: message,
@@ -112,7 +109,6 @@ export const RunroomCreate = () => {
   const handleChange = (e) => {
     setType(e);
     formik.setFieldValue("type", e);
-    console.log(e);
   };
   const handleTypeChange = (e) => {
     setCompType(e);
@@ -183,7 +179,8 @@ export const RunroomCreate = () => {
                   onBlur={formik.handleBlur}
                   onChange={formik.handleChange}
                   name="distance"
-                  type="number"
+                  type="text"
+                  onKeyUp={() => formik.setFieldValue("duration", `0`)}
                   value={formik.values.distance}
                 />
                 <FormControl style={{ width: "8rem", marginTop: 16 }} required error={unit === ""}>
@@ -206,11 +203,41 @@ export const RunroomCreate = () => {
                   </Select>
                   {unit === "" ? <FormHelperText>Error</FormHelperText> : ""}
                 </FormControl>
+                <TextField
+                  required
+                  id="outlined-required"
+                  error={Boolean(formik.touched.runStartTime && formik.errors.runStartTime)}
+                  helperText="Please select run start time"
+                  onBlur={formik.handleBlur}
+                  onChange={formik.handleChange}
+                  name="runStartTime"
+                  type="datetime-local"
+                  onKeyUp={() => formik.setFieldValue("duration", `0`)}
+                  value={formik.values.runStartTime}
+                />
+                <TextField
+                  required
+                  id="outlined-required"
+                  error={Boolean(formik.touched.runFinishTime && formik.errors.runFinishTime)}
+                  helperText="Please select run finish time"
+                  onBlur={formik.handleBlur}
+                  onChange={formik.handleChange}
+                  name="runFinishTime"
+                  type="datetime-local"
+                  onKeyUp={() => formik.setFieldValue("duration", `0`)}
+                  value={formik.values.runFinishTime}
+                />
                 <Button
                   style={{ marginTop: 21, marginLeft: "1rem" }}
-                  onClick={() => formik.handleSubmit()}
+                  onClick={() => {
+                    formik.handleSubmit();
+                  }}
                   disabled={
-                    !formik.values.distance || !formik.values.user_id || !formik.values.type
+                    !formik.values.runFinishTime ||
+                    !formik.values.runStartTime ||
+                    !formik.values.distance ||
+                    !formik.values.user_id ||
+                    !formik.values.type
                   }
                   variant="contained"
                   size="medium"
@@ -286,6 +313,31 @@ export const RunroomCreate = () => {
                   name="duration"
                   type="text"
                   value={formik.values.duration}
+                  onKeyUp={() => formik.setFieldValue("distance", `0 miles`)}
+                />
+                <TextField
+                  required
+                  id="outlined-required"
+                  error={Boolean(formik.touched.runStartTime && formik.errors.runStartTime)}
+                  helperText="Please select run start time"
+                  onBlur={formik.handleBlur}
+                  onChange={formik.handleChange}
+                  name="runStartTime"
+                  type="datetime-local"
+                  onKeyUp={() => formik.setFieldValue("duration", `0`)}
+                  value={formik.values.runStartTime}
+                />
+                <TextField
+                  required
+                  id="outlined-required"
+                  error={Boolean(formik.touched.runFinishTime && formik.errors.runFinishTime)}
+                  helperText="Please select run finish time"
+                  onBlur={formik.handleBlur}
+                  onChange={formik.handleChange}
+                  name="runFinishTime"
+                  type="datetime-local"
+                  onKeyUp={() => formik.setFieldValue("duration", `0`)}
+                  value={formik.values.runFinishTime}
                 />
                 <Button
                   style={{ marginTop: 21 }}
@@ -293,7 +345,11 @@ export const RunroomCreate = () => {
                   variant="contained"
                   size="medium"
                   disabled={
-                    !formik.values.duration || !formik.values.user_id || !formik.values.type
+                    !formik.values.runFinishTime ||
+                    !formik.values.runStartTime ||
+                    !formik.values.duration ||
+                    !formik.values.user_id ||
+                    !formik.values.type
                   }
                 >
                   Submit

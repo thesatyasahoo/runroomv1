@@ -43,6 +43,7 @@ export const RunroomListResults = ({ ...rest }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [openDialog1, setOpenDialog1] = useState(false);
   const [viewDialogObj, setViewDialogObj] = useState({});
+  const [unit, setUnit] = useState("");
   const [open, setOpen] = useState({
     open: false,
     message: "Success",
@@ -143,7 +144,6 @@ export const RunroomListResults = ({ ...rest }) => {
   };
 
   const onFileChange = async (event) => {
-    console.log(event.target.files[0]);
     setLoading(true);
     let bytes = event.target.files[0].size;
     if (!+bytes) return "0 Bytes";
@@ -178,7 +178,6 @@ export const RunroomListResults = ({ ...rest }) => {
         },
       })
       .then((res) => {
-        // console.log(res.data.path);
         setUpdate({ ...update, image: res.data.path });
         setLoading(false);
         return setImage(res.data.path);
