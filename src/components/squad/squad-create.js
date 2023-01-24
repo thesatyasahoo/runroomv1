@@ -2,7 +2,18 @@ import { useState, useEffect } from "react";
 import * as React from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Button, Box, Card, TextField } from "@mui/material";
+import {
+  Button,
+  Box,
+  Card,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormHelperText,
+  Autocomplete,
+} from "@mui/material";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { useCookies } from "react-cookie";
@@ -15,6 +26,12 @@ export const SquadCreate = () => {
   const dispatch = useDispatch();
   const [type, setType] = useState(0);
   const [compType, setCompType] = useState("0");
+  const [userList, setUserList] = useState([]);
+  const [visibleType, setVisibleType] = useState("");
+  const [paymentType, setPaymentType] = useState("");
+  const [squadLeader, setSquadLeader] = useState("");
+  const [memberEnroll, setMemberEnroll] = useState("");
+  const [runSetup, setRunSetup] = useState("");
   const [cookies, setCookie, removeCookie] = useCookies(["token"]);
   let token = useSelector((state) => (state.Profile.itemList ? state.Profile.itemList : []));
   let data = cookies.account;
@@ -30,11 +47,11 @@ export const SquadCreate = () => {
       description: "",
       front_image: "https://raw.githubusercontent.com/thesatyasahoo/My-codes/master/user.png",
       visibility_type: "",
-      member_enroll: "Admin",
+      member_enroll: "",
       run_setup: "",
       payment_type: "",
       timezone: new Date(),
-      squad_leaders: "Admin",
+      squad_leaders: "",
       image: "https://raw.githubusercontent.com/thesatyasahoo/My-codes/master/user.png",
     },
     validationSchema: Yup.object({
@@ -47,7 +64,6 @@ export const SquadCreate = () => {
       member_enroll: Yup.string().required("Member Enroll is required."),
     }),
     onSubmit: async (values, helpers) => {
-      console.log(values);
       if (!values.distance) {
         values.distance = "0";
       }
@@ -78,13 +94,39 @@ export const SquadCreate = () => {
     },
   });
   const handleClick = (message) => {
-    console.log("open");
     setOpen({
       state: true,
       message: message,
     });
   };
-
+  const getRunRoomCall = async (token) => {
+    await axios
+      .get(process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "userList", {
+        headers: {
+          authorization: token,
+        },
+      })
+      .then(async (res) => {
+        let tempArray = [];
+        let tempObj = {};
+        await Promise.all(
+          res.data.userList.map(async (e) => {
+            if (e.firstname) {
+              tempObj = {
+                label: `${e.firstname ? e.firstname : ""} ${e.lastname ? e.lastname : ""}`,
+                id: e._id,
+              };
+              tempArray.push(tempObj);
+            }
+          })
+        );
+        setUserList(tempArray);
+        // dispatch(RunroomActions.addToAdmin(res.data.roomList));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   const handleClose = () => {
     setOpen({
       ...open,
@@ -94,18 +136,27 @@ export const SquadCreate = () => {
   const handleChange = (e) => {
     setType(e);
     formik.setFieldValue("type", e);
-    console.log(e);
   };
   const handleTypeChange = (e) => {
     setCompType(e);
   };
   useEffect(() => {
+    getRunRoomCall(cookies.token ? cookies.token : "");
     if (open.open === true) {
       setTimeout(() => {
         setOpen({ ...open, open: false });
       }, 1500);
     }
   }, [open]);
+
+  const handleVisibilityType = (e) => {
+    setVisibleType(e.target.value);
+    formik.setFieldValue("visibility_type", e.target.value);
+  };
+  const handlePaymentType = (e) => {
+    setPaymentType(e.target.value);
+    formik.setFieldValue("payment_type", e.target.value);
+  };
   return (
     <>
       <Snackbar
@@ -188,46 +239,69 @@ export const SquadCreate = () => {
               type="text"
               value={formik.values.description}
             />
-            <TextField
-              fullWidth
+            <FormControl
+              style={{ width: "31ch", marginTop: 16 }}
               required
-              id="outlined-required"
-              label="Visibility Type"
-              error={Boolean(formik.touched.visibility_type && formik.errors.visibility_type)}
-              helperText={formik.touched.visibility_type && formik.errors.visibility_type}
-              onBlur={formik.handleBlur}
-              onChange={formik.handleChange}
-              name="visibility_type"
-              type="text"
-              value={formik.values.visibility_type}
-            />
-            <TextField
-              fullWidth
+              error={visibleType === ""}
+            >
+              <InputLabel id="demo-simple-select-label">Visibility Type</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                label="Visibility Type"
+                value={visibleType}
+                type="text"
+                onChange={(e) => handleVisibilityType(e)}
+              >
+                <MenuItem value={"Public"}>Public</MenuItem>
+                <MenuItem value={"Private"}>Private</MenuItem>
+              </Select>
+              {visibleType === "" ? <FormHelperText>Error</FormHelperText> : ""}
+            </FormControl>
+            <FormControl
+              style={{ width: "31ch", marginTop: 16, marginRight: 20, marginLeft: 20 }}
               required
-              id="outlined-required"
-              label="Run Setup"
-              error={Boolean(formik.touched.run_setup && formik.errors.run_setup)}
-              helperText={formik.touched.run_setup && formik.errors.run_setup}
-              onBlur={formik.handleBlur}
-              onChange={formik.handleChange}
-              name="run_setup"
-              type="text"
-              value={formik.values.run_setup}
-            />
-            <TextField
-              fullWidth
+              error={runSetup === ""}
+            >
+              <InputLabel id="demo-simple-select-label">Run Setup</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                label="Run Setup"
+                value={runSetup}
+                type="text"
+                onChange={(e) => {
+                  setRunSetup(e.target.value);
+                  formik.setFieldValue("run_setup", e.target.value);
+                }}
+              >
+                <MenuItem value={"Members"}>Members</MenuItem>
+                <MenuItem value={"Leaders"}>Leaders</MenuItem>
+              </Select>
+              {runSetup === "" ? <FormHelperText>Error</FormHelperText> : ""}
+            </FormControl>
+
+            <FormControl
+              style={{ width: "31ch", marginTop: 16 }}
               required
-              id="outlined-required"
-              label="Payment Type"
-              error={Boolean(formik.touched.payment_type && formik.errors.payment_type)}
-              helperText={formik.touched.payment_type && formik.errors.payment_type}
-              onBlur={formik.handleBlur}
-              onChange={formik.handleChange}
-              name="payment_type"
-              type="text"
-              value={formik.values.payment_type}
-            />
-            <TextField
+              error={paymentType === ""}
+            >
+              <InputLabel id="demo-simple-select-label">Payment Type</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                label="Payment Type"
+                value={paymentType}
+                type="text"
+                onChange={(e) => handlePaymentType(e)}
+              >
+                <MenuItem value={"Free"}>Free</MenuItem>
+                <MenuItem value={"One Time Pay"}>One Time Pay</MenuItem>
+                <MenuItem value={"Subscription"}>Subscription</MenuItem>
+              </Select>
+              {paymentType === "" ? <FormHelperText>Error</FormHelperText> : ""}
+            </FormControl>
+            {/* <TextField
               fullWidth
               required
               id="outlined-required"
@@ -239,8 +313,29 @@ export const SquadCreate = () => {
               name="squad_leaders"
               type="text"
               value={formik.values.squad_leaders}
-            />
-            <TextField
+            /> */}
+            <div style={{ width: "24rem", display: "inline-block" }}>
+              <Autocomplete
+                disablePortal
+                id="combo-box-demo"
+                placeholder="Choose User"
+                options={userList}
+                sx={{ width: "24rem" }}
+                onInputChange={(event, newInputValue) => {
+                  setSquadLeader(newInputValue);
+                  formik.setFieldValue("squad_leaders", newInputValue);
+                }}
+                renderInput={(params, index) => (
+                  <TextField
+                    error={squadLeader === ""}
+                    key={index}
+                    {...params}
+                    label="Squad Leaders"
+                  />
+                )}
+              />
+            </div>
+            {/* <TextField
               fullWidth
               required
               id="outlined-required"
@@ -252,7 +347,28 @@ export const SquadCreate = () => {
               name="member_enroll"
               type="text"
               value={formik.values.member_enroll}
-            />
+            /> */}
+            <div style={{ width: "24rem", display: "inline-block" }}>
+              <Autocomplete
+                disablePortal
+                id="combo-box-demo"
+                placeholder="Choose User"
+                options={userList}
+                sx={{ width: "24rem" }}
+                onInputChange={(event, newInputValue) => {
+                  setMemberEnroll(newInputValue);
+                  formik.setFieldValue("member_enroll", newInputValue);
+                }}
+                renderInput={(params, index) => (
+                  <TextField
+                    error={memberEnroll === ""}
+                    key={index}
+                    {...params}
+                    label="Member Enroll"
+                  />
+                )}
+              />
+            </div>
           </div>
           <div style={{ margin: "1rem", textAlign: "end" }}>
             <Button

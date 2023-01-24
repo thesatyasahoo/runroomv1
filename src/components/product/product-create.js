@@ -8,12 +8,10 @@ import {
   Box,
   Card,
   TextField,
-  Typography,
-  FormHelperText,
-  Select,
-  MenuItem,
+  Input,
   FormControl,
   InputLabel,
+  InputAdornment,
 } from "@mui/material";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
@@ -47,7 +45,7 @@ export const ProductCreate = () => {
     initialValues: {
       prod_name: "",
       prod_category: "",
-      price: "$ ",
+      price: "",
       added_by: "",
       prod_description: "",
       prod_size: "",
@@ -57,6 +55,8 @@ export const ProductCreate = () => {
       prod_name: Yup.string().required("Name is required"),
       price: Yup.string().required("Price is required."),
       added_by: Yup.string().required("Author is required."),
+      prod_size: Yup.string().required("size is required."),
+      prod_category: Yup.string().required("Category is required."),
       image: Yup.string().required("Image is required."),
     }),
     onSubmit: async (values, helpers) => {
@@ -189,7 +189,7 @@ export const ProductCreate = () => {
               value={formik.values.prod_name}
               variant="outlined"
             />
-            <TextField
+            {/* <TextField
               fullWidth
               id="outlined-required"
               required
@@ -202,6 +202,24 @@ export const ProductCreate = () => {
               type="text"
               value={formik.values.price}
               variant="outlined"
+            /> */}
+            <TextField
+              required
+              error={Boolean(formik.touched.price && formik.errors.price)}
+              helperText={formik.touched.price && formik.errors.price}
+              onBlur={formik.handleBlur}
+              onChange={formik.handleChange}
+              label="Price"
+              name="price"
+              type="text"
+              value={formik.values.price}
+              variant="outlined"
+              id="outlined-start-adornment"
+              sx={{ m: 1, width: "25ch" }}
+              placeholder="Enter price here"
+              InputProps={{
+                startAdornment: <InputAdornment position="start">$</InputAdornment>,
+              }}
             />
             <TextField
               fullWidth
@@ -276,6 +294,14 @@ export const ProductCreate = () => {
             </div>
 
             <div style={{ paddingBottom: "3rem", paddingRight: "3rem" }}>
+              <Button
+                style={{ marginRight: 21, marginTop: 21 }}
+                onClick={() => Router.push("products").catch(console.error)}
+                variant="outlined"
+                size="medium"
+              >
+                Cancel
+              </Button>
               <Button
                 style={{ marginTop: 21 }}
                 onClick={formik.handleSubmit}
