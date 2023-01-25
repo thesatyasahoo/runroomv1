@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import PerfectScrollbar from "react-perfect-scrollbar";
 import { useAuthContext } from "../../contexts/auth-context";
 import {
   Button,
@@ -401,9 +400,7 @@ export const UsersListResults = ({ ...rest }) => {
                     <TableCell>
                       <img
                         alt={"...loading"}
-                        src={
-                          "https://raw.githubusercontent.com/thesatyasahoo/My-codes/master/user.png"
-                        }
+                        src={"/static/avatar.png"}
                         style={{
                           height: "3rem",
                           width: "3rem",

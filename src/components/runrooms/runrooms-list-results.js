@@ -408,11 +408,7 @@ export const RunroomListResults = ({ ...rest }) => {
                     <TableCell>{adminArray.createdBy ? adminArray.createdBy : null}</TableCell>
                     <TableCell>{adminArray.distance ? adminArray.distance : null}</TableCell>
                     <TableCell>{adminArray.run_status ? adminArray.run_status : null}</TableCell>
-                    <TableCell>
-                      {adminArray.duration
-                        ? new Date(adminArray.duration).toISOString().slice(0, 10)
-                        : null}
-                    </TableCell>
+                    <TableCell>{adminArray.duration ? adminArray.duration : null}</TableCell>
                     <TableCell>
                       <VisibilityRoundedIcon
                         color="info"

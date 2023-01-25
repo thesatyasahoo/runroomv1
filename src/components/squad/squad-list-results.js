@@ -386,7 +386,7 @@ export const SquadListResults = ({ ...rest }) => {
                     <TableCell>
                       <img
                         alt={"...loading"}
-                        src={adminArray.image}
+                        src={"/static/avatar.png"}
                         style={{
                           height: "3rem",
                           width: "3rem",

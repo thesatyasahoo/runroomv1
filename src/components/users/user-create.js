@@ -228,7 +228,11 @@ export const UserCreate = () => {
                 <MenuItem value={"female"}>Female</MenuItem>
                 <MenuItem value={"others"}>Others</MenuItem>
               </Select>
-              {gender === 0 ? <FormHelperText>Error</FormHelperText> : ""}
+              {gender === 0 ? (
+                <FormHelperText>Error : Please select atleast one</FormHelperText>
+              ) : (
+                ""
+              )}
             </FormControl>
             {/* <TextField
               fullWidth

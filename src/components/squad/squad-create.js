@@ -211,7 +211,7 @@ export const SquadCreate = () => {
                 <MenuItem value={1}>Private</MenuItem>
                 <MenuItem value={2}>Public</MenuItem>
               </Select>
-              {type === 0 ? <FormHelperText>Error</FormHelperText> : ""}
+              {type === 0 ? <FormHelperText>Error : Please select atleast one</FormHelperText> : ""}
             </FormControl> */}
             <TextField
               fullWidth
@@ -256,7 +256,11 @@ export const SquadCreate = () => {
                 <MenuItem value={"Public"}>Public</MenuItem>
                 <MenuItem value={"Private"}>Private</MenuItem>
               </Select>
-              {visibleType === "" ? <FormHelperText>Error</FormHelperText> : ""}
+              {visibleType === "" ? (
+                <FormHelperText>Error : Please select atleast one</FormHelperText>
+              ) : (
+                ""
+              )}
             </FormControl>
             <FormControl
               style={{ width: "31ch", marginTop: 16, marginRight: 20, marginLeft: 20 }}
@@ -278,7 +282,11 @@ export const SquadCreate = () => {
                 <MenuItem value={"Members"}>Members</MenuItem>
                 <MenuItem value={"Leaders"}>Leaders</MenuItem>
               </Select>
-              {runSetup === "" ? <FormHelperText>Error</FormHelperText> : ""}
+              {runSetup === "" ? (
+                <FormHelperText>Error : Please select atleast one</FormHelperText>
+              ) : (
+                ""
+              )}
             </FormControl>
 
             <FormControl
@@ -299,7 +307,11 @@ export const SquadCreate = () => {
                 <MenuItem value={"One Time Pay"}>One Time Pay</MenuItem>
                 <MenuItem value={"Subscription"}>Subscription</MenuItem>
               </Select>
-              {paymentType === "" ? <FormHelperText>Error</FormHelperText> : ""}
+              {paymentType === "" ? (
+                <FormHelperText>Error : Please select atleast one</FormHelperText>
+              ) : (
+                ""
+              )}
             </FormControl>
             {/* <TextField
               fullWidth
@@ -314,7 +326,7 @@ export const SquadCreate = () => {
               type="text"
               value={formik.values.squad_leaders}
             /> */}
-            <div style={{ width: "24rem", display: "inline-block" }}>
+            <div style={{ width: "24rem", display: "inline-block", marginRight: "1rem" }}>
               <Autocomplete
                 disablePortal
                 id="combo-box-demo"
@@ -331,10 +343,14 @@ export const SquadCreate = () => {
                     key={index}
                     {...params}
                     label="Squad Leaders"
+                    helperText={
+                      squadLeader?.length > 0 ? null : "Error : Please select atleast one"
+                    }
                   />
                 )}
               />
             </div>
+
             {/* <TextField
               fullWidth
               required
@@ -349,25 +365,33 @@ export const SquadCreate = () => {
               value={formik.values.member_enroll}
             /> */}
             <div style={{ width: "24rem", display: "inline-block" }}>
-              <Autocomplete
-                disablePortal
-                id="combo-box-demo"
-                placeholder="Choose User"
-                options={userList}
-                sx={{ width: "24rem" }}
-                onInputChange={(event, newInputValue) => {
-                  setMemberEnroll(newInputValue);
-                  formik.setFieldValue("member_enroll", newInputValue);
-                }}
-                renderInput={(params, index) => (
-                  <TextField
-                    error={memberEnroll === ""}
-                    key={index}
-                    {...params}
-                    label="Member Enroll"
-                  />
+              <FormControl
+                style={{ width: "31ch", marginTop: 16 }}
+                required
+                error={memberEnroll === ""}
+              >
+                <InputLabel id="demo-simple-select-label">Member Enroll</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  label="Member Enroll"
+                  value={memberEnroll}
+                  type="text"
+                  placeholder="Choose option"
+                  onChange={(e) => {
+                    setMemberEnroll(e.target.value);
+                    formik.setFieldValue("member_enroll", e.target.value);
+                  }}
+                >
+                  <MenuItem value={"Open"}>Open</MenuItem>
+                  <MenuItem value={"Restricted"}>Restricted</MenuItem>
+                </Select>
+                {memberEnroll === "" ? (
+                  <FormHelperText>Error : Please select atleast one</FormHelperText>
+                ) : (
+                  ""
                 )}
-              />
+              </FormControl>
             </div>
           </div>
           <div style={{ margin: "1rem", textAlign: "end" }}>

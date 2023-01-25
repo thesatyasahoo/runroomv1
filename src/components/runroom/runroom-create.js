@@ -22,11 +22,14 @@ import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import Slide from "@mui/material/Slide";
 import Router from "next/router";
+import "./runroom.module.css";
 
 export const RunroomCreate = () => {
   const dispatch = useDispatch();
   const [type, setType] = useState(0);
   const [unit, setUnit] = useState("");
+  const [durationUnit, setDurationUnit] = useState("");
+  const [finalFinshTime, setFinalFinishTime] = useState("");
   const [compType, setCompType] = useState("0");
   const [cookies, setCookie, removeCookie] = useCookies(["token"]);
   let token = useSelector((state) => (state.Profile.itemList ? state.Profile.itemList : []));
@@ -61,6 +64,7 @@ export const RunroomCreate = () => {
         ...values,
         distance: values.distance ? `${values.distance} ${unit}` : `0 ${unit}`,
         duration: values.duration ? values.duration : 0,
+        runFinishTime: finalFinshTime,
       };
       await axios
         .post(process.env.NEXT_PUBLIC_BASE_URL_ADMIN + "createRunroom", values, {
@@ -168,7 +172,11 @@ export const RunroomCreate = () => {
                     <MenuItem value={1}>Private</MenuItem>
                     <MenuItem value={2}>Public</MenuItem>
                   </Select>
-                  {type === 0 ? <FormHelperText>Error</FormHelperText> : ""}
+                  {type === 0 ? (
+                    <FormHelperText>Error : Please select atleast one</FormHelperText>
+                  ) : (
+                    ""
+                  )}
                 </FormControl>
                 <TextField
                   required
@@ -201,7 +209,11 @@ export const RunroomCreate = () => {
                     <MenuItem value={"kms"}>Kms</MenuItem>
                     <MenuItem value={"miles"}>Miles</MenuItem>
                   </Select>
-                  {unit === "" ? <FormHelperText>Error</FormHelperText> : ""}
+                  {unit === "" ? (
+                    <FormHelperText>Error : Please select atleast one</FormHelperText>
+                  ) : (
+                    ""
+                  )}
                 </FormControl>
                 <TextField
                   required
@@ -300,21 +312,12 @@ export const RunroomCreate = () => {
                     <MenuItem value={1}>Private</MenuItem>
                     <MenuItem value={2}>Public</MenuItem>
                   </Select>
-                  {type === 0 ? <FormHelperText>Error</FormHelperText> : ""}
+                  {type === 0 ? (
+                    <FormHelperText>Error : Please select atleast one</FormHelperText>
+                  ) : (
+                    ""
+                  )}
                 </FormControl>
-                <TextField
-                  required
-                  id="outlined-required"
-                  label="Duration"
-                  error={Boolean(formik.touched.duration && formik.errors.duration)}
-                  helperText={formik.touched.duration && formik.errors.duration}
-                  onBlur={formik.handleBlur}
-                  onChange={formik.handleChange}
-                  name="duration"
-                  type="text"
-                  value={formik.values.duration}
-                  onKeyUp={() => formik.setFieldValue("distance", `0 miles`)}
-                />
                 <TextField
                   required
                   id="outlined-required"
@@ -327,6 +330,94 @@ export const RunroomCreate = () => {
                   onKeyUp={() => formik.setFieldValue("duration", `0`)}
                   value={formik.values.runStartTime}
                 />
+                <TextField
+                  required
+                  id="outlined-required"
+                  className="input"
+                  label="Duration"
+                  error={Boolean(formik.touched.duration && formik.errors.duration)}
+                  helperText={formik.touched.duration && formik.errors.duration}
+                  onBlur={formik.handleBlur}
+                  onChange={formik.handleChange}
+                  name="duration"
+                  type="number"
+                  value={formik.values.duration}
+                  onKeyUp={(e) => {
+                    if (!formik.values.runStartTime) {
+                      setOpen({ open: true, message: "Please Enter Start Time First" });
+                    }
+                    if (formik.values.runStartTime) {
+                      formik.setFieldValue("distance", `0 miles`);
+                    }
+                  }}
+                />
+                <FormControl
+                  style={{ width: "8rem", marginTop: 16 }}
+                  required
+                  error={durationUnit === ""}
+                >
+                  <InputLabel id="demo-simple-select-label">Unit</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    label="Unit"
+                    value={durationUnit}
+                    type="text"
+                    onChange={(e) => {
+                      if (!formik.values.runStartTime) {
+                        setOpen({ open: true, message: "Please Enter Start Time First" });
+                      }
+                      if (!formik.values.duration) {
+                        setOpen({ open: true, message: "Please Enter Duretion First" });
+                      }
+                      if (formik.values.runStartTime && formik.values.duration) {
+                        // console.log(new Date(formik.values.runStartTime), "start");
+                        // console.log(formik.values.duration, "duration");
+                        setDurationUnit(e.target.value);
+                        let startTime = new Date(formik.values.runStartTime);
+                        let finishTime = "";
+                        if (e.target.value === "minutes") {
+                          finishTime = new Date(
+                            startTime.getTime() + Number(formik.values.duration) * 60000
+                          );
+                          // console.log(finishTime, "finishTime m should be");
+                          setFinalFinishTime(finishTime);
+                          finishTime.setMinutes(finishTime.getMinutes() + 5.5 * 60);
+                          // console.log(finishTime, "finishTime m");
+                          formik.setFieldValue(
+                            "runFinishTime",
+                            finishTime.toISOString().toString().slice(0, 23)
+                          );
+                        } else {
+                          finishTime = new Date(formik.values.runStartTime);
+                          finishTime.setHours(
+                            finishTime.getHours() + Number(formik.values.duration)
+                          );
+                          // console.log(finishTime, "finishTime h should be");
+                          setFinalFinishTime(finishTime);
+                          finishTime.setHours(finishTime.getHours() + 5.3);
+                          // console.log(finishTime, "finishTime h");
+                          formik.setFieldValue(
+                            "runFinishTime",
+                            finishTime.toISOString().toString().slice(0, 23)
+                          );
+                        }
+                      }
+                    }}
+                  >
+                    <MenuItem value={""} selected>
+                      Select
+                    </MenuItem>
+                    <MenuItem value={"minutes"}>Minutes</MenuItem>
+                    <MenuItem value={"hours"}>Hours</MenuItem>
+                  </Select>
+                  {durationUnit === "" ? (
+                    <FormHelperText>Error : Please select atleast one</FormHelperText>
+                  ) : (
+                    ""
+                  )}
+                </FormControl>
+
                 <TextField
                   required
                   id="outlined-required"
