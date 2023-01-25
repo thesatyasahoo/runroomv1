@@ -378,6 +378,8 @@ export const RunroomListResults = ({ ...rest }) => {
                 <TableCell>Distance</TableCell>
                 <TableCell>Run Status</TableCell>
                 <TableCell>Duration</TableCell>
+                <TableCell>Start Time</TableCell>
+                <TableCell>Finish Time</TableCell>
                 <TableCell>Action</TableCell>
               </TableRow>
             </TableHead>
@@ -408,7 +410,19 @@ export const RunroomListResults = ({ ...rest }) => {
                     <TableCell>{adminArray.createdBy ? adminArray.createdBy : null}</TableCell>
                     <TableCell>{adminArray.distance ? adminArray.distance : null}</TableCell>
                     <TableCell>{adminArray.run_status ? adminArray.run_status : null}</TableCell>
-                    <TableCell>{adminArray.duration ? adminArray.duration : null}</TableCell>
+                    <TableCell>
+                      {adminArray.duration
+                        ? typeof adminArray.duration === "number"
+                          ? adminArray.duration
+                          : "NA"
+                        : null}
+                    </TableCell>
+                    <TableCell>
+                      {adminArray.runStartTime ? adminArray.runStartTime : null}
+                    </TableCell>
+                    <TableCell>
+                      {adminArray.runFinishTime ? adminArray.runFinishTime : null}
+                    </TableCell>
                     <TableCell>
                       <VisibilityRoundedIcon
                         color="info"
